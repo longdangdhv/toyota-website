@@ -43,9 +43,9 @@ Tạo file `vercel.json`:
 git init
 git add .
 git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/toyota-website.git
-git push -u origin main
+git branch -M master
+git remote add origin https://github.com/longdangdhv/toyota-website.git
+git push -u origin master
 ```
 
 ### Bước 3: Deploy Vercel
