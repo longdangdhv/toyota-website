@@ -6,11 +6,11 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.static('public'));
-app.use('/images', express.static('images'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set('view engine', 'ejs');
-app.set('views', __dirname);
+app.set('views', path.join(__dirname, 'views'));
 
 // Import data
 const cars = require('./cars.json');
