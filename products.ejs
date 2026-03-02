@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sản Phẩm - Toyota</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+      <nav class="flex items-center justify-between py-4">
+        <a href="/" class="flex items-center space-x-3">
+          <div class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xl">TOYOTA</div>
+        </a>
+        <ul class="hidden md:flex space-x-8 items-center">
+          <li><a href="/" class="text-gray-700 hover:text-red-600 font-medium">Trang chủ</a></li>
+          <li><a href="/san-pham" class="text-red-600 hover:text-red-600 font-medium border-b-2 border-red-600">Sản phẩm</a></li>
+          <li><a href="/tin-tuc" class="text-gray-700 hover:text-red-600 font-medium">Tin tức</a></li>
+          <li><a href="/khuyen-mai" class="text-gray-700 hover:text-red-600 font-medium">Khuyến mãi</a></li>
+          <li><a href="/dang-ky-lai-thu" class="text-gray-700 hover:text-red-600 font-medium">Đăng ký lái thử</a></li>
+          <li><a href="/tra-gop" class="text-gray-700 hover:text-red-600 font-medium">Trả góp</a></li>
+          <li><a href="/lien-he" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium">Liên hệ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
+    <div class="container mx-auto px-4">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Tất Cả Sản Phẩm Toyota</h1>
+      <p class="text-xl">Khám phá dòng xe phù hợp với bạn</p>
+    </div>
+  </section>
+
+  <!-- Filter & Products -->
+  <section class="py-12">
+    <div class="container mx-auto px-4">
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-4 mb-8">
+        <button onclick="filterCars('all')" class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition" id="filter-all">Tất cả</button>
+        <button onclick="filterCars('Sedan')" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" id="filter-sedan">Sedan</button>
+        <button onclick="filterCars('SUV')" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" id="filter-suv">SUV</button>
+        <button onclick="filterCars('MPV')" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" id="filter-mpv">MPV</button>
+        <button onclick="filterCars('Bán tải')" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" id="filter-truck">Bán tải</button>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="productsGrid">
+        <% cars.forEach(car => { %>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover car-item" data-category="<%= car.category %>">
+          <div class="h-48 bg-gray-200 flex items-center justify-center">
+            <img src="<%= car.image %>" alt="<%= car.name %>" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span class=text-gray-400 text-5xl>🚗</span>'">
+          </div>
+          <div class="p-6">
+            <span class="inline-block bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold mb-3"><%= car.category %></span>
+            <h3 class="text-xl font-bold text-gray-900 mb-2"><%= car.name %></h3>
+            <p class="text-gray-600 text-sm mb-4"><%= car.tagline %></p>
+            <div class="mb-4">
+              <p class="text-gray-500 text-sm">Giá từ</p>
+              <p class="text-red-600 text-2xl font-bold"><%= car.priceRange %></p>
+            </div>
+            <a href="/san-pham/<%= car.slug %>" class="block w-full bg-red-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-red-700 transition">Xem Chi Tiết</a>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center text-gray-400">
+      <p>&copy; 2024 Toyota. All rights reserved. | Hotline: 098 888 8888</p>
+    </div>
+  </footer>
+
+  <script>
+    function filterCars(category) {
+      const items = document.querySelectorAll('.car-item');
+      const buttons = document.querySelectorAll('[id^="filter-"]');
+      
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-red-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      });
+      
+      const activeBtn = document.getElementById('filter-' + (category === 'all' ? 'all' : category.toLowerCase().replace(' ', '')));
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-gray-200', 'text-gray-700');
+        activeBtn.classList.add('bg-red-600', 'text-white');
+      }
+      
+      items.forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

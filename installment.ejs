@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tư Vấn Trả Góp - Toyota</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+      <nav class="flex items-center justify-between py-4">
+        <a href="/" class="flex items-center space-x-3">
+          <div class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xl">TOYOTA</div>
+        </a>
+        <ul class="hidden md:flex space-x-8 items-center">
+          <li><a href="/" class="text-gray-700 hover:text-red-600 font-medium">Trang chủ</a></li>
+          <li><a href="/san-pham" class="text-gray-700 hover:text-red-600 font-medium">Sản phẩm</a></li>
+          <li><a href="/tin-tuc" class="text-gray-700 hover:text-red-600 font-medium">Tin tức</a></li>
+          <li><a href="/khuyen-mai" class="text-gray-700 hover:text-red-600 font-medium">Khuyến mãi</a></li>
+          <li><a href="/dang-ky-lai-thu" class="text-gray-700 hover:text-red-600 font-medium">Đăng ký lái thử</a></li>
+          <li><a href="/tra-gop" class="text-red-600 hover:text-red-600 font-medium border-b-2 border-red-600">Trả góp</a></li>
+          <li><a href="/lien-he" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium">Liên hệ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Tư Vấn Mua Xe Trả Góp</h1>
+      <p class="text-xl">Sở hữu xe mơ ước với lãi suất ưu đãi - Duyệt nhanh trong 24h</p>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <section class="py-16">
+    <div class="container mx-auto px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <!-- Calculator Form -->
+          <div class="bg-white rounded-2xl shadow-xl p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Tính Toán Trả Góp</h2>
+            <div class="space-y-6">
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Chọn dòng xe</label>
+                <select id="carSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" onchange="updateCalculation()">
+                  <option value="">-- Chọn xe --</option>
+                  <% cars.forEach(car => { %>
+                  <option value="<%= car.price %>"><%= car.name %> - <%= car.priceRange %></option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Giá xe (VNĐ)</label>
+                <input type="text" id="carPrice" readonly class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg">
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Trả trước (%): <span id="downPaymentPercent">30</span>%</label>
+                <input type="range" id="downPayment" min="20" max="80" value="30" class="w-full" oninput="updateCalculation()">
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Số tiền trả trước (VNĐ)</label>
+                <input type="text" id="downPaymentAmount" readonly class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg">
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Thời gian vay (năm)</label>
+                <select id="loanTerm" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" onchange="updateCalculation()">
+                  <option value="1">1 năm</option>
+                  <option value="2">2 năm</option>
+                  <option value="3" selected>3 năm</option>
+                  <option value="4">4 năm</option>
+                  <option value="5">5 năm</option>
+                  <option value="6">6 năm</option>
+                  <option value="7">7 năm</option>
+                  <option value="8">8 năm</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Lãi suất (%/năm)</label>
+                <input type="number" id="interestRate" value="7.99" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" oninput="updateCalculation()">
+              </div>
+
+              <!-- Result -->
+              <div class="bg-red-50 border-l-4 border-red-600 p-6">
+                <p class="text-gray-700 font-semibold mb-2">Số tiền vay</p>
+                <p class="text-2xl font-bold text-gray-900 mb-4" id="loanAmount">0 VNĐ</p>
+                <p class="text-gray-700 font-semibold mb-2">Trả mỗi tháng (dự kiến)</p>
+                <p class="text-3xl font-bold text-red-600" id="monthlyPayment">0 VNĐ</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Form -->
+          <div class="bg-white rounded-2xl shadow-xl p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Yêu Cầu Tư Vấn</h2>
+            <form id="consultForm" class="space-y-6">
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Họ và tên *</label>
+                <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Số điện thoại *</label>
+                <input type="tel" name="phone" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Dòng xe quan tâm</label>
+                <select name="car" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500">
+                  <option value="">-- Chọn xe --</option>
+                  <% cars.forEach(car => { %>
+                  <option value="<%= car.name %>"><%= car.name %></option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2">Nội dung</label>
+                <textarea name="message" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="Nhập câu hỏi hoặc yêu cầu của bạn..."></textarea>
+              </div>
+
+              <button type="submit" class="w-full bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition">
+                Gửi Yêu Cầu
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-12">
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl mb-3">💰</div>
+            <h3 class="font-bold mb-2">Trả trước 20%</h3>
+            <p class="text-gray-600 text-sm">Dễ dàng sở hữu</p>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl mb-3">📊</div>
+            <h3 class="font-bold mb-2">Lãi suất ưu đãi</h3>
+            <p class="text-gray-600 text-sm">Từ 5.99%/năm</p>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl mb-3">⏰</div>
+            <h3 class="font-bold mb-2">Vay đến 8 năm</h3>
+            <p class="text-gray-600 text-sm">Linh hoạt thời hạn</p>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl mb-3">✅</div>
+            <h3 class="font-bold mb-2">Duyệt nhanh 24h</h3>
+            <p class="text-gray-600 text-sm">Thủ tục đơn giản</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center text-gray-400">
+      <p>&copy; 2024 Toyota. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function updateCalculation() {
+      const price = parseFloat(document.getElementById('carSelect').value) || 0;
+      const downPaymentPercent = parseInt(document.getElementById('downPayment').value);
+      const loanTerm = parseInt(document.getElementById('loanTerm').value);
+      const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+      
+      document.getElementById('downPaymentPercent').textContent = downPaymentPercent;
+      document.getElementById('carPrice').value = price ? price.toLocaleString('vi-VN') + ' VNĐ' : '';
+      
+      const downPaymentAmount = price * (downPaymentPercent / 100);
+      document.getElementById('downPaymentAmount').value = downPaymentAmount ? downPaymentAmount.toLocaleString('vi-VN') + ' VNĐ' : '';
+      
+      const loanAmount = price - downPaymentAmount;
+      document.getElementById('loanAmount').textContent = loanAmount ? loanAmount.toLocaleString('vi-VN') + ' VNĐ' : '0 VNĐ';
+      
+      if (loanAmount > 0) {
+        const monthlyRate = interestRate / 12;
+        const numPayments = loanTerm * 12;
+        const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        document.getElementById('monthlyPayment').textContent = monthlyPayment.toLocaleString('vi-VN', {maximumFractionDigits: 0}) + ' VNĐ';
+      } else {
+        document.getElementById('monthlyPayment').textContent = '0 VNĐ';
+      }
+    }
+
+    document.getElementById('consultForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...data, type: 'installment' })
+        });
+        const result = await response.json();
+        alert(result.message);
+        e.target.reset();
+      } catch (error) {
+        alert('Có lỗi xảy ra. Vui lòng thử lại!');
+      }
+    });
+  </script>
+</body>
+</html>

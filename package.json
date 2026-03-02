@@ -1,0 +1,17 @@
+{
+  "name": "toyota-oto-website",
+  "version": "1.0.0",
+  "description": "Website quản lý sản phẩm ô tô Toyota",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["toyota", "oto", "car", "website"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ejs": "^3.1.9"
+  }
+}

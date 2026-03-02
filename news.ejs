@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tin Tức - Toyota</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+      <nav class="flex items-center justify-between py-4">
+        <a href="/" class="flex items-center space-x-3">
+          <div class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xl">TOYOTA</div>
+        </a>
+        <ul class="hidden md:flex space-x-8 items-center">
+          <li><a href="/" class="text-gray-700 hover:text-red-600 font-medium">Trang chủ</a></li>
+          <li><a href="/san-pham" class="text-gray-700 hover:text-red-600 font-medium">Sản phẩm</a></li>
+          <li><a href="/tin-tuc" class="text-red-600 hover:text-red-600 font-medium border-b-2 border-red-600">Tin tức</a></li>
+          <li><a href="/khuyen-mai" class="text-gray-700 hover:text-red-600 font-medium">Khuyến mãi</a></li>
+          <li><a href="/dang-ky-lai-thu" class="text-gray-700 hover:text-red-600 font-medium">Đăng ký lái thử</a></li>
+          <li><a href="/tra-gop" class="text-gray-700 hover:text-red-600 font-medium">Trả góp</a></li>
+          <li><a href="/lien-he" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium">Liên hệ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Tin Tức Toyota</h1>
+      <p class="text-xl">Cập nhật thông tin mới nhất về sản phẩm và khuyến mãi</p>
+    </div>
+  </section>
+
+  <!-- News Grid -->
+  <section class="py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% news.forEach(article => { %>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+          <div class="h-56 bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white text-6xl">
+            📰
+          </div>
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <span class="inline-block bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold"><%= article.category %></span>
+              <span class="text-gray-400 text-sm"><%= article.date %></span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2"><%= article.title %></h3>
+            <p class="text-gray-600 mb-4 line-clamp-3"><%= article.summary %></p>
+            <a href="/tin-tuc/<%= article.id %>" class="inline-block bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition">Đọc Thêm</a>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center text-gray-400">
+      <p>&copy; 2024 Toyota. All rights reserved. | Hotline: 098 888 8888</p>
+    </div>
+  </footer>
+</body>
+</html>

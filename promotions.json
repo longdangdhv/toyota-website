@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1,
+    "title": "Ưu đãi mua xe tháng 3/2024",
+    "description": "Giảm giá đến 50 triệu + Tặng phụ kiện chính hãng",
+    "image": "/images/promo-1.jpg",
+    "validUntil": "2024-03-31",
+    "highlight": true,
+    "details": [
+      "Giảm giá trực tiếp: 30.000.000 VNĐ",
+      "Tặng phụ kiện chính hãng: 20.000.000 VNĐ",
+      "Hỗ trợ lãi suất 0% trong 12 tháng đầu",
+      "Bảo hiểm vật chất 1 năm",
+      "Phiếu bảo dưỡng miễn phí 30.000 km"
+    ],
+    "applicableCars": ["Vios", "Corolla Cross", "Veloz Cross", "Yaris Cross"]
+  },
+  {
+    "id": 2,
+    "title": "Đặc quyền khách hàng VIP",
+    "description": "Ưu đãi đặc biệt cho khách hàng doanh nghiệp",
+    "image": "/images/promo-2.jpg",
+    "validUntil": "2024-12-31",
+    "highlight": true,
+    "details": [
+      "Chiết khấu đặc biệt cho đơn hàng từ 3 xe trở lên",
+      "Tư vấn phương án tài chính tối ưu",
+      "Hỗ trợ làm biển số và đăng ký xe",
+      "Bảo dưỡng miễn phí 50.000 km",
+      "Giao xe tận nơi miễn phí"
+    ],
+    "applicableCars": ["Tất cả dòng xe"]
+  },
+  {
+    "id": 3,
+    "title": "Lái thử nhận quà ngay",
+    "description": "Đăng ký lái thử nhận ngay quà tặng hấp dẫn",
+    "image": "/images/promo-3.jpg",
+    "validUntil": "2024-06-30",
+    "highlight": false,
+    "details": [
+      "Quà tặng trị giá 500.000 VNĐ khi đăng ký lái thử",
+      "Tặng thêm voucher phụ kiện khi mua xe",
+      "Cơ hội trúng iPhone 15 Pro Max",
+      "Trải nghiệm xe tại showroom hoặc tận nhà"
+    ],
+    "applicableCars": ["Tất cả dòng xe"]
+  }
+]
