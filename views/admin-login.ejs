@@ -12,117 +12,211 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #eb0a1e 0%, #c41230 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(235, 10, 30, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: pulse 8s ease-in-out infinite;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(235, 10, 30, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: pulse 8s ease-in-out infinite 4s;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
         .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #eb0a1e 0%, #c41230 100%);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(235, 10, 30, 0.3);
+        }
+        .logo-icon span {
+            font-size: 36px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: 2px;
         }
         .logo h1 {
-            color: #eb0a1e;
-            font-size: 32px;
-            margin-bottom: 5px;
+            color: #1a1a1a;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
         .logo p {
             color: #666;
             font-size: 14px;
+            font-weight: 400;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #333;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
         }
         input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
         }
         input:focus {
             outline: none;
             border-color: #eb0a1e;
+            box-shadow: 0 0 0 4px rgba(235, 10, 30, 0.1);
         }
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background: #eb0a1e;
+            padding: 16px;
+            background: linear-gradient(135deg, #eb0a1e 0%, #c41230 100%);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(235, 10, 30, 0.3);
         }
         .btn-login:hover {
-            background: #c41230;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(235, 10, 30, 0.4);
+        }
+        .btn-login:active {
+            transform: translateY(0);
         }
         .error {
-            background: #fee;
+            background: linear-gradient(135deg, #fee 0%, #fdd 100%);
             color: #c00;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             border-left: 4px solid #c00;
+            font-size: 14px;
+            animation: shake 0.5s ease-in-out;
         }
-        .info {
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
             font-size: 13px;
-            color: #666;
-        }
-        .info strong {
-            color: #333;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="logo">
+            <div class="logo-icon">
+                <span>T</span>
+            </div>
             <h1>TOYOTA</h1>
             <p>Admin Dashboard</p>
         </div>
         
         <% if (error) { %>
-            <div class="error"><%= error %></div>
+            <div class="error">⚠️ <%= error %></div>
         <% } %>
         
         <form method="POST" action="/admin/login">
             <div class="form-group">
                 <label for="username">Tên đăng nhập</label>
-                <input type="text" id="username" name="username" required autofocus>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="username" name="username" required autofocus placeholder="Nhập tên đăng nhập">
+                </div>
             </div>
             
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
-                <input type="password" id="password" name="password" required>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu">
+                </div>
             </div>
             
             <button type="submit" class="btn-login">Đăng nhập</button>
         </form>
         
-        <div class="info">
-            <strong>Demo:</strong> Username: <code>admin</code> / Password: <code>admin</code>
+        <div class="footer-text">
+            © 2024 Toyota. All rights reserved.
         </div>
     </div>
 </body>
