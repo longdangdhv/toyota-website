@@ -1,8 +1,8 @@
 node_modules/
-toyota.db
 .env
 *.log
 .DS_Store
-data-test-drives.json
-data-quotes.json
-data-contacts.json
+toyota.db
+better-sqlite3
+database.js
+init-db.js

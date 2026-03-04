@@ -4,17 +4,15 @@ const fs = require('fs');
 const session = require('express-session');
 
 // Sử dụng database phù hợp với môi trường
-const isVercel = process.env.VERCEL === '1';
 const useMongoDB = process.env.MONGODB_URI;
-const useFileStorage = process.env.USE_FILE_STORAGE === 'true';
 
 let db;
 if (useMongoDB) {
-  db = require('./database-mongodb');  // MongoDB cho production
-} else if (useFileStorage || isVercel) {
-  db = require('./database-file');     // File storage cho testing/Vercel
+  console.log('🔵 Using MongoDB database');
+  db = require('./database-mongodb');
 } else {
-  db = require('./database');          // SQLite cho local development
+  console.log('📁 Using File-based database');
+  db = require('./database-file');
 }
 
 const app = express();
