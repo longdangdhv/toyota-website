@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sửa xe - Toyota Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        .header {
+            background: #eb0a1e;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 24px;
+        }
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .breadcrumb a {
+            color: #eb0a1e;
+            text-decoration: none;
+        }
+        .content {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #eb0a1e;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #c41230;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .preview-image {
+            max-width: 300px;
+            margin-top: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 TOYOTA Admin</h1>
+        <a href="/admin/logout" class="btn-logout">Đăng xuất</a>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/admin">Dashboard</a> / 
+            <a href="/admin/cars">Quản lý xe</a> / 
+            <strong>Sửa xe</strong>
+        </div>
+        
+        <div class="content">
+            <h2>Sửa thông tin xe: <%= car.name %></h2>
+            
+            <form method="POST" action="/admin/cars/update/<%= car.id %>">
+                <div class="form-group">
+                    <label for="name">Tên xe *</label>
+                    <input type="text" id="name" name="name" value="<%= car.name %>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="slug">Slug (URL) *</label>
+                    <input type="text" id="slug" name="slug" value="<%= car.slug %>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tagline">Tagline</label>
+                    <input type="text" id="tagline" name="tagline" value="<%= car.tagline %>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">Giá</label>
+                    <input type="text" id="price" name="price" value="<%= car.price %>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="priceRange">Khoảng giá</label>
+                    <input type="text" id="priceRange" name="priceRange" value="<%= car.priceRange %>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Danh mục *</label>
+                    <select id="category" name="category" required>
+                        <option value="Sedan" <%= car.category === 'Sedan' ? 'selected' : '' %>>Sedan</option>
+                        <option value="SUV" <%= car.category === 'SUV' ? 'selected' : '' %>>SUV</option>
+                        <option value="MPV" <%= car.category === 'MPV' ? 'selected' : '' %>>MPV</option>
+                        <option value="Bán tải" <%= car.category === 'Bán tải' ? 'selected' : '' %>>Bán tải</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">Đường dẫn ảnh</label>
+                    <input type="text" id="image" name="image" value="<%= car.image %>" onchange="previewImage(this.value)">
+                    <img id="preview" src="<%= car.image %>" alt="Preview" class="preview-image">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Mô tả</label>
+                    <textarea id="description" name="description"><%= car.description %></textarea>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="featured" name="featured" <%= car.featured ? 'checked' : '' %>>
+                    <label for="featured" style="margin: 0;">Đánh dấu là xe nổi bật</label>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
+                    <a href="/admin/cars" class="btn btn-secondary">❌ Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function previewImage(url) {
+            document.getElementById('preview').src = url;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tin tức - Toyota Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .header { background: #eb0a1e; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 24px; }
+        .btn-logout { padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 5px; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        .breadcrumb { margin-bottom: 20px; color: #666; }
+        .breadcrumb a { color: #eb0a1e; text-decoration: none; }
+        .content { background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        h2 { color: #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f9f9f9; font-weight: 600; color: #333; }
+        tr:hover { background: #f9f9f9; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 TOYOTA Admin</h1>
+        <a href="/admin/logout" class="btn-logout">Đăng xuất</a>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb"><a href="/admin">Dashboard</a> / <strong>Quản lý tin tức</strong></div>
+        
+        <div class="content">
+            <h2>Danh sách tin tức</h2>
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Tiêu đề</th><th>Danh mục</th><th>Ngày</th></tr>
+                </thead>
+                <tbody>
+                    <% news.forEach(article => { %>
+                        <tr>
+                            <td><%= article.id %></td>
+                            <td><strong><%= article.title %></strong></td>
+                            <td><span class="badge"><%= article.category %></span></td>
+                            <td><%= article.date %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

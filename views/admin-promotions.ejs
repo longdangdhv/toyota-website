@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khuyến mãi - Toyota Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .header { background: #eb0a1e; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 24px; }
+        .btn-logout { padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 5px; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        .breadcrumb { margin-bottom: 20px; color: #666; }
+        .breadcrumb a { color: #eb0a1e; text-decoration: none; }
+        .content { background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        h2 { color: #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f9f9f9; font-weight: 600; color: #333; }
+        tr:hover { background: #f9f9f9; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #28a745; color: white; }
+        .badge-secondary { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 TOYOTA Admin</h1>
+        <a href="/admin/logout" class="btn-logout">Đăng xuất</a>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb"><a href="/admin">Dashboard</a> / <strong>Quản lý khuyến mãi</strong></div>
+        
+        <div class="content">
+            <h2>Danh sách khuyến mãi</h2>
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Tiêu đề</th><th>Hạn sử dụng</th><th>Nổi bật</th></tr>
+                </thead>
+                <tbody>
+                    <% promotions.forEach(promo => { %>
+                        <tr>
+                            <td><%= promo.id %></td>
+                            <td><strong><%= promo.title %></strong></td>
+                            <td><%= promo.validUntil %></td>
+                            <td>
+                                <% if (promo.highlight) { %>
+                                    <span class="badge badge-success">Nổi bật</span>
+                                <% } else { %>
+                                    <span class="badge badge-secondary">Thường</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
