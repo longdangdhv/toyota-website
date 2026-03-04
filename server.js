@@ -2,7 +2,21 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const session = require('express-session');
-const db = require('./database');
+
+// Sử dụng database phù hợp với môi trường
+const isVercel = process.env.VERCEL === '1';
+const useMongoDB = process.env.MONGODB_URI;
+const useFileStorage = process.env.USE_FILE_STORAGE === 'true';
+
+let db;
+if (useMongoDB) {
+  db = require('./database-mongodb');  // MongoDB cho production
+} else if (useFileStorage || isVercel) {
+  db = require('./database-file');     // File storage cho testing/Vercel
+} else {
+  db = require('./database');          // SQLite cho local development
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -91,9 +105,9 @@ app.get('/lien-he', (req, res) => {
 });
 
 // API endpoints for form submissions
-app.post('/api/test-drive', (req, res) => {
+app.post('/api/test-drive', async (req, res) => {
   try {
-    db.createTestDrive(req.body);
+    await db.createTestDrive(req.body);
     res.json({ success: true, message: 'Đăng ký lái thử thành công! Chúng tôi sẽ liên hệ với bạn sớm.' });
   } catch (err) {
     console.error('Error creating test drive:', err);
@@ -101,9 +115,9 @@ app.post('/api/test-drive', (req, res) => {
   }
 });
 
-app.post('/api/quote', (req, res) => {
+app.post('/api/quote', async (req, res) => {
   try {
-    db.createQuote(req.body);
+    await db.createQuote(req.body);
     res.json({ success: true, message: 'Yêu cầu báo giá đã được gửi! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.' });
   } catch (err) {
     console.error('Error creating quote:', err);
@@ -111,9 +125,9 @@ app.post('/api/quote', (req, res) => {
   }
 });
 
-app.post('/api/contact', (req, res) => {
+app.post('/api/contact', async (req, res) => {
   try {
-    db.createContact(req.body);
+    await db.createContact(req.body);
     res.json({ success: true, message: 'Tin nhắn của bạn đã được gửi! Chúng tôi sẽ phản hồi sớm.' });
   } catch (err) {
     console.error('Error creating contact:', err);
@@ -206,30 +220,30 @@ app.get('/admin/promotions', requireAuth, (req, res) => {
 });
 
 // Admin data views
-app.get('/admin/test-drives', requireAuth, (req, res) => {
-  const testDrives = db.getAllTestDrives();
+app.get('/admin/test-drives', requireAuth, async (req, res) => {
+  const testDrives = await db.getAllTestDrives();
   res.render('admin-test-drives', { testDrives });
 });
 
-app.get('/admin/quotes', requireAuth, (req, res) => {
-  const quotes = db.getAllQuotes();
+app.get('/admin/quotes', requireAuth, async (req, res) => {
+  const quotes = await db.getAllQuotes();
   res.render('admin-quotes', { quotes });
 });
 
-app.get('/admin/contacts', requireAuth, (req, res) => {
-  const contacts = db.getAllContacts();
+app.get('/admin/contacts', requireAuth, async (req, res) => {
+  const contacts = await db.getAllContacts();
   res.render('admin-contacts', { contacts });
 });
 
-app.get('/admin/contacts/view/:id', requireAuth, (req, res) => {
-  const contact = db.getContactById(parseInt(req.params.id));
+app.get('/admin/contacts/view/:id', requireAuth, async (req, res) => {
+  const contact = await db.getContactById(req.params.id);
   if (!contact) return res.status(404).send('Không tìm thấy tin nhắn');
   res.render('admin-contact-detail', { contact });
 });
 
-app.post('/admin/contacts/delete/:id', requireAuth, (req, res) => {
+app.post('/admin/contacts/delete/:id', requireAuth, async (req, res) => {
   try {
-    db.deleteContact(parseInt(req.params.id));
+    await db.deleteContact(req.params.id);
     res.redirect('/admin/contacts');
   } catch (err) {
     console.error('Error deleting contact:', err);
@@ -237,9 +251,9 @@ app.post('/admin/contacts/delete/:id', requireAuth, (req, res) => {
   }
 });
 
-app.get('/admin/contacts/search', requireAuth, (req, res) => {
+app.get('/admin/contacts/search', requireAuth, async (req, res) => {
   const keyword = req.query.q || '';
-  const contacts = keyword ? db.searchContacts(keyword) : db.getAllContacts();
+  const contacts = keyword ? await db.searchContacts(keyword) : await db.getAllContacts();
   res.render('admin-contacts', { contacts, keyword });
 });
 

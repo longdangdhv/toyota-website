@@ -3,3 +3,6 @@ toyota.db
 .env
 *.log
 .DS_Store
+data-test-drives.json
+data-quotes.json
+data-contacts.json
