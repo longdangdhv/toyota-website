@@ -221,6 +221,28 @@ app.get('/admin/contacts', requireAuth, (req, res) => {
   res.render('admin-contacts', { contacts });
 });
 
+app.get('/admin/contacts/view/:id', requireAuth, (req, res) => {
+  const contact = db.getContactById(parseInt(req.params.id));
+  if (!contact) return res.status(404).send('Không tìm thấy tin nhắn');
+  res.render('admin-contact-detail', { contact });
+});
+
+app.post('/admin/contacts/delete/:id', requireAuth, (req, res) => {
+  try {
+    db.deleteContact(parseInt(req.params.id));
+    res.redirect('/admin/contacts');
+  } catch (err) {
+    console.error('Error deleting contact:', err);
+    res.status(500).send('Có lỗi xảy ra');
+  }
+});
+
+app.get('/admin/contacts/search', requireAuth, (req, res) => {
+  const keyword = req.query.q || '';
+  const contacts = keyword ? db.searchContacts(keyword) : db.getAllContacts();
+  res.render('admin-contacts', { contacts, keyword });
+});
+
 app.listen(PORT, () => {
   console.log(`Server đang chạy tại http://localhost:${PORT}`);
 });

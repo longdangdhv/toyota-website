@@ -219,6 +219,23 @@ module.exports = {
   
   getAllContacts: () => db.prepare('SELECT * FROM contacts ORDER BY created_at DESC').all(),
   
+  getContactById: (id) => db.prepare('SELECT * FROM contacts WHERE id = ?').get(id),
+  
+  deleteContact: (id) => {
+    const stmt = db.prepare('DELETE FROM contacts WHERE id = ?');
+    return stmt.run(id);
+  },
+  
+  searchContacts: (keyword) => {
+    const stmt = db.prepare(`
+      SELECT * FROM contacts 
+      WHERE name LIKE ? OR phone LIKE ? OR email LIKE ? OR message LIKE ?
+      ORDER BY created_at DESC
+    `);
+    const search = `%${keyword}%`;
+    return stmt.all(search, search, search, search);
+  },
+  
   // Insert data helpers
   insertCar,
   insertNews,

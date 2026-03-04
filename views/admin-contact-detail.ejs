@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết liên hệ - Toyota Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .header { background: #eb0a1e; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 24px; }
+        .btn-logout { padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; border-radius: 5px; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .breadcrumb { margin-bottom: 20px; color: #666; }
+        .breadcrumb a { color: #eb0a1e; text-decoration: none; }
+        .content { background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        h2 { color: #333; margin-bottom: 25px; border-bottom: 2px solid #eb0a1e; padding-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: 150px 1fr; gap: 15px; margin-bottom: 30px; }
+        .info-label { font-weight: 600; color: #666; }
+        .info-value { color: #333; }
+        .info-value a { color: #eb0a1e; text-decoration: none; }
+        .info-value a:hover { text-decoration: underline; }
+        .message-box { background: #f9f9f9; padding: 20px; border-radius: 5px; border-left: 4px solid #eb0a1e; margin: 20px 0; }
+        .message-box h3 { margin-bottom: 15px; color: #333; font-size: 16px; }
+        .message-content { line-height: 1.8; color: #555; white-space: pre-wrap; }
+        .btn-group { display: flex; gap: 10px; margin-top: 30px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; }
+        .btn-back { background: #6c757d; color: white; }
+        .btn-back:hover { background: #5a6268; }
+        .btn-delete { background: #dc3545; color: white; }
+        .btn-delete:hover { background: #c82333; }
+        .btn-call { background: #28a745; color: white; }
+        .btn-call:hover { background: #218838; }
+        .btn-email { background: #007bff; color: white; }
+        .btn-email:hover { background: #0056b3; }
+        .timestamp { color: #999; font-size: 13px; font-style: italic; }
+        .badge { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #28a745; color: white; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 TOYOTA Admin</h1>
+        <a href="/admin/logout" class="btn-logout">Đăng xuất</a>
+    </div>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/admin">Dashboard</a> / 
+            <a href="/admin/contacts">Quản lý liên hệ</a> / 
+            <strong>Chi tiết #<%= contact.id %></strong>
+        </div>
+        
+        <div class="content">
+            <h2>📧 Chi tiết tin nhắn liên hệ</h2>
+            
+            <div class="info-grid">
+                <div class="info-label">ID:</div>
+                <div class="info-value"><strong>#<%= contact.id %></strong></div>
+                
+                <div class="info-label">Tên khách hàng:</div>
+                <div class="info-value"><strong><%= contact.name %></strong> <span class="badge">Khách hàng mới</span></div>
+                
+                <div class="info-label">Số điện thoại:</div>
+                <div class="info-value">
+                    <a href="tel:<%= contact.phone %>">📞 <%= contact.phone %></a>
+                </div>
+                
+                <div class="info-label">Email:</div>
+                <div class="info-value">
+                    <% if (contact.email) { %>
+                        <a href="mailto:<%= contact.email %>">✉️ <%= contact.email %></a>
+                    <% } else { %>
+                        <span style="color: #999;">Không cung cấp</span>
+                    <% } %>
+                </div>
+                
+                <div class="info-label">Chủ đề:</div>
+                <div class="info-value"><%= contact.subject || 'Không có chủ đề' %></div>
+                
+                <div class="info-label">Thời gian gửi:</div>
+                <div class="info-value timestamp">
+                    <%= new Date(contact.created_at).toLocaleString('vi-VN', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    }) %>
+                </div>
+            </div>
+            
+            <div class="message-box">
+                <h3>💬 Nội dung tin nhắn:</h3>
+                <div class="message-content"><%= contact.message %></div>
+            </div>
+            
+            <div class="btn-group">
+                <a href="/admin/contacts" class="btn btn-back">⬅️ Quay lại danh sách</a>
+                <a href="tel:<%= contact.phone %>" class="btn btn-call">📞 Gọi điện</a>
+                <% if (contact.email) { %>
+                    <a href="mailto:<%= contact.email %>" class="btn btn-email">✉️ Gửi email</a>
+                <% } %>
+                <form action="/admin/contacts/delete/<%= contact.id %>" method="POST" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa tin nhắn này?')">
+                    <button type="submit" class="btn btn-delete">🗑️ Xóa tin nhắn</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
