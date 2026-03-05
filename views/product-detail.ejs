@@ -46,13 +46,96 @@
   <section class="py-12">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <!-- Image -->
+        <!-- Image Gallery with Slider -->
         <div>
           <div class="bg-white rounded-2xl shadow-xl p-8">
-            <div class="h-96 bg-gray-200 rounded-xl flex items-center justify-center">
-              <img src="<%= car.image %>" alt="<%= car.name %>" class="w-full h-full object-cover rounded-xl" onerror="this.parentElement.innerHTML='<span class=text-gray-400 text-9xl>🚗</span>'">
+            <!-- Main Image -->
+            <div class="h-96 bg-gray-200 rounded-xl flex items-center justify-center mb-4 relative overflow-hidden">
+              <% 
+                let images = [];
+                if (car.images && Array.isArray(car.images) && car.images.length > 0) {
+                  images = car.images;
+                } else if (car.image) {
+                  images = [car.image];
+                } else {
+                  images = ['/images/placeholder.jpg'];
+                }
+              %>
+              <img id="mainImage" src="<%= images[0] %>" alt="<%= car.name %>" class="w-full h-full object-cover rounded-xl" onerror="this.parentElement.innerHTML='<span class=text-gray-400 text-9xl>🚗</span>'">
+              
+              <!-- Navigation Arrows -->
+              <% if (images.length > 1) { %>
+                <button onclick="previousImage()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+                <button onclick="nextImage()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+                
+                <!-- Image Counter -->
+                <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
+                  <span id="currentIndex">1</span> / <%= images.length %>
+                </div>
+              <% } %>
             </div>
+            
+            <!-- Thumbnails -->
+            <% if (images.length > 1) { %>
+              <div class="grid grid-cols-4 gap-2">
+                <% images.forEach((img, index) => { %>
+                  <div onclick="selectImage(<%= index %>)" class="cursor-pointer border-2 rounded-lg overflow-hidden hover:border-red-600 transition <%= index === 0 ? 'border-red-600' : 'border-gray-200' %>" id="thumb-<%= index %>">
+                    <img src="<%= img %>" alt="Ảnh <%= index + 1 %>" class="w-full h-20 object-cover">
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
           </div>
+          
+          <script>
+            const images = <%- JSON.stringify(images) %>;
+            let currentIndex = 0;
+            
+            function selectImage(index) {
+              currentIndex = index;
+              updateMainImage();
+            }
+            
+            function previousImage() {
+              currentIndex = (currentIndex - 1 + images.length) % images.length;
+              updateMainImage();
+            }
+            
+            function nextImage() {
+              currentIndex = (currentIndex + 1) % images.length;
+              updateMainImage();
+            }
+            
+            function updateMainImage() {
+              document.getElementById('mainImage').src = images[currentIndex];
+              document.getElementById('currentIndex').textContent = currentIndex + 1;
+              
+              // Update thumbnail borders
+              document.querySelectorAll('[id^="thumb-"]').forEach((thumb, index) => {
+                if (index === currentIndex) {
+                  thumb.classList.remove('border-gray-200');
+                  thumb.classList.add('border-red-600');
+                } else {
+                  thumb.classList.add('border-gray-200');
+                  thumb.classList.remove('border-red-600');
+                }
+              });
+            }
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+              if (e.key === 'ArrowLeft') previousImage();
+              if (e.key === 'ArrowRight') nextImage();
+            });
+          </script>
         </div>
 
         <!-- Info -->

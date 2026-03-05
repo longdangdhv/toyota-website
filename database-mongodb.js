@@ -37,6 +37,21 @@ module.exports = {
   
   getFeaturedCars: () => carsData.filter(car => car.featured),
   
+  addCar: async (carData) => {
+    try {
+      const database = await connectDB();
+      const result = await database.collection('cars').insertOne(carData);
+      
+      // Cập nhật carsData để đồng bộ
+      carsData.push(carData);
+      
+      return { lastInsertRowid: result.insertedId };
+    } catch (error) {
+      console.error('Error adding car:', error);
+      throw error;
+    }
+  },
+  
   updateCar: async (carData) => {
     try {
       const database = await connectDB();
@@ -45,6 +60,13 @@ module.exports = {
         { $set: carData },
         { upsert: true }
       );
+      
+      // Cập nhật carsData để đồng bộ
+      const index = carsData.findIndex(car => car.id === carData.id);
+      if (index !== -1) {
+        carsData[index] = { ...carsData[index], ...carData };
+      }
+      
       return { changes: result.modifiedCount || result.upsertedCount };
     } catch (error) {
       console.error('Error updating car:', error);

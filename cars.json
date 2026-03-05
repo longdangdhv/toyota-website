@@ -1,13 +1,12 @@
 [
   {
     "id": 1,
-    "name": "Toyota Vios",
+    "name": "Toyota Vios test",
     "slug": "vios",
     "tagline": "Sedan hạng B bán chạy nhất Việt Nam",
     "price": "458.000.000",
     "priceRange": "458 - 545 triệu VNĐ",
-    "image": "/images/vios.jpg",
-    "featured": true,
+    "featured": 1,
     "category": "Sedan",
     "specs": {
       "engine": "1.5L VVT-i",
@@ -24,11 +23,26 @@
       "Cảm biến lùi",
       "Khởi động bằng nút bấm"
     ],
-    "colors": ["Trắng", "Đen", "Bạc", "Xám", "Đỏ"],
+    "colors": [
+      "Trắng",
+      "Đen",
+      "Bạc",
+      "Xám",
+      "Đỏ"
+    ],
     "versions": [
-      { "name": "Vios 1.5E MT", "price": "458.000.000" },
-      { "name": "Vios 1.5E CVT", "price": "502.000.000" },
-      { "name": "Vios 1.5G CVT", "price": "545.000.000" }
+      {
+        "name": "Vios 1.5E MT",
+        "price": "458.000.000"
+      },
+      {
+        "name": "Vios 1.5E CVT",
+        "price": "502.000.000"
+      },
+      {
+        "name": "Vios 1.5G CVT",
+        "price": "545.000.000"
+      }
     ],
     "description": "Toyota Vios là mẫu sedan hạng B được ưa chuộng nhất tại Việt Nam với thiết kế hiện đại, vận hành êm ái và tiết kiệm nhiên liệu."
   },
@@ -39,8 +53,7 @@
     "tagline": "Sedan hạng D đẳng cấp",
     "price": "1.105.000.000",
     "priceRange": "1.105 - 1.450 triệu VNĐ",
-    "image": "/images/camry.jpg",
-    "featured": true,
+    "featured": 1,
     "category": "Sedan",
     "specs": {
       "engine": "2.0L / 2.5L",
@@ -57,10 +70,22 @@
       "Sạc không dây",
       "Điều hòa 3 vùng"
     ],
-    "colors": ["Trắng ngọc trai", "Đen", "Bạc", "Đỏ", "Xanh"],
+    "colors": [
+      "Trắng ngọc trai",
+      "Đen",
+      "Bạc",
+      "Đỏ",
+      "Xanh"
+    ],
     "versions": [
-      { "name": "Camry 2.0G", "price": "1.105.000.000" },
-      { "name": "Camry 2.5Q", "price": "1.450.000.000" }
+      {
+        "name": "Camry 2.0G",
+        "price": "1.105.000.000"
+      },
+      {
+        "name": "Camry 2.5Q",
+        "price": "1.450.000.000"
+      }
     ],
     "description": "Toyota Camry mang đến trải nghiệm lái xe đẳng cấp với thiết kế sang trọng, động cơ mạnh mẽ và công nghệ an toàn hàng đầu."
   },
@@ -89,10 +114,22 @@
       "Đèn LED full",
       "Cruise control"
     ],
-    "colors": ["Trắng", "Đen", "Bạc", "Đỏ", "Xanh"],
+    "colors": [
+      "Trắng",
+      "Đen",
+      "Bạc",
+      "Đỏ",
+      "Xanh"
+    ],
     "versions": [
-      { "name": "Corolla Cross 1.8V", "price": "820.000.000" },
-      { "name": "Corolla Cross 1.8G", "price": "905.000.000" }
+      {
+        "name": "Corolla Cross 1.8V",
+        "price": "820.000.000"
+      },
+      {
+        "name": "Corolla Cross 1.8G",
+        "price": "905.000.000"
+      }
     ],
     "description": "Toyota Corolla Cross là SUV đô thị kết hợp hoàn hảo giữa phong cách thể thao và hiệu suất vận hành tiết kiệm nhiên liệu."
   },
@@ -121,11 +158,26 @@
       "Ga tự động thích ứng",
       "Ghế da cao cấp"
     ],
-    "colors": ["Trắng", "Đen", "Bạc", "Nâu", "Xám"],
+    "colors": [
+      "Trắng",
+      "Đen",
+      "Bạc",
+      "Nâu",
+      "Xám"
+    ],
     "versions": [
-      { "name": "Fortuner 2.4 MT 4x2", "price": "1.050.000.000" },
-      { "name": "Fortuner 2.4 AT 4x2", "price": "1.143.000.000" },
-      { "name": "Fortuner 2.8 AT 4x4", "price": "1.455.000.000" }
+      {
+        "name": "Fortuner 2.4 MT 4x2",
+        "price": "1.050.000.000"
+      },
+      {
+        "name": "Fortuner 2.4 AT 4x2",
+        "price": "1.143.000.000"
+      },
+      {
+        "name": "Fortuner 2.8 AT 4x4",
+        "price": "1.455.000.000"
+      }
     ],
     "description": "Toyota Fortuner là mẫu SUV 7 chỗ mạnh mẽ, phù hợp cho gia đình và những chuyến off-road."
   },
@@ -154,10 +206,21 @@
       "Điều hòa 2 dàn",
       "Cửa hậu điện"
     ],
-    "colors": ["Trắng", "Đen", "Bạc", "Xám"],
+    "colors": [
+      "Trắng",
+      "Đen",
+      "Bạc",
+      "Xám"
+    ],
     "versions": [
-      { "name": "Veloz Cross 1.5 MT", "price": "638.000.000" },
-      { "name": "Veloz Cross 1.5 CVT", "price": "698.000.000" }
+      {
+        "name": "Veloz Cross 1.5 MT",
+        "price": "638.000.000"
+      },
+      {
+        "name": "Veloz Cross 1.5 CVT",
+        "price": "698.000.000"
+      }
     ],
     "description": "Toyota Veloz Cross là MPV 7 chỗ hiện đại, linh hoạt, phù hợp cho gia đình đa thế hệ."
   },
@@ -186,10 +249,21 @@
       "Camera lùi",
       "Cửa sổ trời"
     ],
-    "colors": ["Trắng", "Đỏ", "Xanh", "Bạc"],
+    "colors": [
+      "Trắng",
+      "Đỏ",
+      "Xanh",
+      "Bạc"
+    ],
     "versions": [
-      { "name": "Yaris Cross 1.5G", "price": "650.000.000" },
-      { "name": "Yaris Cross 1.5V", "price": "765.000.000" }
+      {
+        "name": "Yaris Cross 1.5G",
+        "price": "650.000.000"
+      },
+      {
+        "name": "Yaris Cross 1.5V",
+        "price": "765.000.000"
+      }
     ],
     "description": "Toyota Yaris Cross là mẫu SUV cỡ nhỏ năng động, thích hợp cho người trẻ và gia đình nhỏ."
   },
@@ -219,11 +293,25 @@
       "Camera lùi",
       "Thùng xe rộng rãi"
     ],
-    "colors": ["Trắng", "Đen", "Bạc", "Xám"],
+    "colors": [
+      "Trắng",
+      "Đen",
+      "Bạc",
+      "Xám"
+    ],
     "versions": [
-      { "name": "Hilux 2.4 MT 4x2", "price": "668.000.000" },
-      { "name": "Hilux 2.4 AT 4x2", "price": "758.000.000" },
-      { "name": "Hilux 2.4 AT 4x4", "price": "916.000.000" }
+      {
+        "name": "Hilux 2.4 MT 4x2",
+        "price": "668.000.000"
+      },
+      {
+        "name": "Hilux 2.4 AT 4x2",
+        "price": "758.000.000"
+      },
+      {
+        "name": "Hilux 2.4 AT 4x4",
+        "price": "916.000.000"
+      }
     ],
     "description": "Toyota Hilux là mẫu bán tải huyền thoại với độ bền bỉ vượt trội, phù hợp cho công việc và giải trí."
   },
@@ -252,10 +340,22 @@
       "Phanh tay điện tử",
       "Giữ phanh tự động"
     ],
-    "colors": ["Trắng", "Đỏ", "Xanh", "Bạc", "Cam"],
+    "colors": [
+      "Trắng",
+      "Đỏ",
+      "Xanh",
+      "Bạc",
+      "Cam"
+    ],
     "versions": [
-      { "name": "Raize 1.0 AT", "price": "498.000.000" },
-      { "name": "Raize 1.0 Turbo AT", "price": "598.000.000" }
+      {
+        "name": "Raize 1.0 AT",
+        "price": "498.000.000"
+      },
+      {
+        "name": "Raize 1.0 Turbo AT",
+        "price": "598.000.000"
+      }
     ],
     "description": "Toyota Raize là SUV cỡ nhỏ năng động, thích hợp di chuyển trong đô thị với thiết kế trẻ trung."
   }

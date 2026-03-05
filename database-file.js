@@ -49,10 +49,26 @@ module.exports = {
   
   getFeaturedCars: () => carsData.filter(car => car.featured),
   
+  addCar: (carData) => {
+    carsData.push(carData);
+    writeJSON(carsFile, carsData);
+    return { lastInsertRowid: carData.id };
+  },
+  
   updateCar: (carData) => {
     const index = carsData.findIndex(car => car.id === carData.id);
     if (index !== -1) {
-      carsData[index] = { ...carsData[index], ...carData };
+      // Giữ lại specs, features, colors, versions từ xe cũ
+      const oldCar = carsData[index];
+      carsData[index] = { 
+        ...oldCar,
+        ...carData,
+        // Đảm bảo không mất các field quan trọng
+        specs: carData.specs || oldCar.specs,
+        features: carData.features || oldCar.features,
+        colors: carData.colors || oldCar.colors,
+        versions: carData.versions || oldCar.versions
+      };
       writeJSON(carsFile, carsData);
       return { changes: 1 };
     }

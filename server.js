@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const session = require('express-session');
+const multer = require('multer');
 
 // Sử dụng database phù hợp với môi trường
 const useMongoDB = process.env.MONGODB_URI;
@@ -17,6 +18,37 @@ if (useMongoDB) {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Cấu hình multer để upload ảnh
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, 'images');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const customName = req.body.imageName || 'image-' + Date.now();
+    // Thêm timestamp để tránh trùng tên khi upload nhiều file
+    cb(null, customName + '-' + Date.now() + ext);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Chỉ chấp nhận file ảnh JPG hoặc PNG!'));
+  }
+});
 
 // Middleware
 app.use(express.static('public'));
@@ -177,14 +209,139 @@ app.get('/admin/cars', requireAuth, (req, res) => {
   res.render('admin-cars', { cars });
 });
 
+app.get('/admin/cars/add', requireAuth, (req, res) => {
+  // Lấy danh sách ảnh có sẵn
+  const imagesPath = path.join(__dirname, 'images');
+  let availableImages = [];
+  
+  try {
+    if (fs.existsSync(imagesPath)) {
+      const files = fs.readdirSync(imagesPath);
+      availableImages = files
+        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
+        .map(file => ({
+          name: file,
+          path: `/images/${file}`
+        }));
+    }
+  } catch (err) {
+    console.error('Error reading images:', err);
+  }
+  
+  res.render('admin-car-add', { availableImages });
+});
+
+app.post('/admin/cars/add', requireAuth, upload.single('imageFile'), async (req, res) => {
+  try {
+    console.log('📝 Form data received:', req.body);
+    console.log('📁 File uploaded:', req.file);
+    
+    let imagePath = req.body.image || '';
+    
+    // Nếu có upload file mới
+    if (req.file) {
+      imagePath = `/images/${req.file.filename}`;
+    }
+    
+    // Đảm bảo imagePath là string
+    if (Array.isArray(imagePath)) {
+      imagePath = imagePath[imagePath.length - 1] || '';
+    }
+    
+    console.log('🖼️ Final image path:', imagePath);
+    
+    // Tạo ID mới
+    const cars = db.getAllCars();
+    const newId = cars.length > 0 ? Math.max(...cars.map(c => c.id)) + 1 : 1;
+    
+    const carData = {
+      id: newId,
+      name: req.body.name,
+      slug: req.body.slug,
+      tagline: req.body.tagline || '',
+      price: req.body.price || '',
+      priceRange: req.body.priceRange || '',
+      image: imagePath,
+      featured: req.body.featured === 'on' ? 1 : 0,
+      category: req.body.category,
+      description: req.body.description || ''
+    };
+    
+    console.log('✅ Car data to save:', carData);
+    
+    db.addCar(carData);
+    res.redirect('/admin/cars');
+  } catch (err) {
+    console.error('Error adding car:', err);
+    res.status(500).send('Có lỗi xảy ra');
+  }
+});
+
 app.get('/admin/cars/edit/:id', requireAuth, (req, res) => {
   const car = db.getCarById(parseInt(req.params.id));
   if (!car) return res.status(404).send('Không tìm thấy xe');
-  res.render('admin-car-edit', { car });
+  
+  // Lấy danh sách ảnh có sẵn
+  const imagesPath = path.join(__dirname, 'images');
+  let availableImages = [];
+  
+  try {
+    if (fs.existsSync(imagesPath)) {
+      const files = fs.readdirSync(imagesPath);
+      availableImages = files
+        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
+        .map(file => ({
+          name: file,
+          path: `/images/${file}`
+        }));
+    }
+  } catch (err) {
+    console.error('Error reading images:', err);
+  }
+  
+  res.render('admin-car-edit', { car, availableImages });
 });
 
-app.post('/admin/cars/update/:id', requireAuth, (req, res) => {
+app.post('/admin/cars/update/:id', requireAuth, upload.array('imageFiles', 10), async (req, res) => {
   try {
+    console.log('📝 Form data received:', req.body);
+    console.log('📁 Files uploaded:', req.files);
+    
+    // Lấy xe hiện tại từ database
+    const currentCar = db.getCarById(parseInt(req.params.id));
+    
+    let images = [];
+    let mainImage = req.body.mainImage || '';
+    
+    // Nếu có upload file mới
+    if (req.files && req.files.length > 0) {
+      images = req.files.map(file => `/images/${file.filename}`);
+      mainImage = images[0]; // Ảnh đầu tiên làm ảnh đại diện
+    } else if (req.body.images && req.body.images.trim()) {
+      // Lấy từ form (chọn từ thư viện)
+      images = req.body.images.split(',').filter(img => img.trim());
+      mainImage = req.body.mainImage || images[0] || '';
+    } else {
+      // Không có ảnh mới → Giữ nguyên ảnh cũ
+      if (currentCar) {
+        images = currentCar.images || (currentCar.image ? [currentCar.image] : []);
+        mainImage = currentCar.image || '';
+      }
+    }
+    
+    // Đảm bảo mainImage thuộc danh sách images
+    if (mainImage && !images.includes(mainImage)) {
+      images.unshift(mainImage);
+    }
+    
+    // Fallback: nếu không có ảnh nào
+    if (images.length === 0 && mainImage) {
+      images = [mainImage];
+    }
+    
+    console.log('🖼️ Final images:', images);
+    console.log('⭐ Main image:', mainImage);
+    
     const carData = {
       id: parseInt(req.params.id),
       name: req.body.name,
@@ -192,11 +349,15 @@ app.post('/admin/cars/update/:id', requireAuth, (req, res) => {
       tagline: req.body.tagline,
       price: req.body.price,
       priceRange: req.body.priceRange,
-      image: req.body.image,
+      image: mainImage, // Ảnh đại diện
+      images: images, // Tất cả ảnh
       featured: req.body.featured === 'on' ? 1 : 0,
       category: req.body.category,
       description: req.body.description
     };
+    
+    console.log('✅ Car data to update:', carData);
+    
     db.updateCar(carData);
     res.redirect('/admin/cars');
   } catch (err) {
@@ -253,6 +414,76 @@ app.get('/admin/contacts/search', requireAuth, async (req, res) => {
   const keyword = req.query.q || '';
   const contacts = keyword ? await db.searchContacts(keyword) : await db.getAllContacts();
   res.render('admin-contacts', { contacts, keyword });
+});
+
+// Admin upload routes
+app.get('/admin/upload', requireAuth, (req, res) => {
+  const imagesPath = path.join(__dirname, 'images');
+  let images = [];
+  
+  try {
+    if (fs.existsSync(imagesPath)) {
+      const files = fs.readdirSync(imagesPath);
+      images = files
+        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
+        .map(file => ({
+          name: file,
+          path: `/images/${file}`
+        }));
+    }
+  } catch (err) {
+    console.error('Error reading images:', err);
+  }
+  
+  res.render('admin-upload', { images, message: null, messageType: null });
+});
+
+app.post('/admin/upload', requireAuth, upload.single('image'), (req, res) => {
+  const imagesPath = path.join(__dirname, 'images');
+  let images = [];
+  
+  try {
+    if (fs.existsSync(imagesPath)) {
+      const files = fs.readdirSync(imagesPath);
+      images = files
+        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
+        .map(file => ({
+          name: file,
+          path: `/images/${file}`
+        }));
+    }
+  } catch (err) {
+    console.error('Error reading images:', err);
+  }
+  
+  if (req.file) {
+    res.render('admin-upload', { 
+      images, 
+      message: `Upload thành công: ${req.file.filename}`,
+      messageType: 'success'
+    });
+  } else {
+    res.render('admin-upload', { 
+      images, 
+      message: 'Lỗi upload ảnh!',
+      messageType: 'error'
+    });
+  }
+});
+
+app.post('/admin/upload/delete', requireAuth, (req, res) => {
+  const filename = req.body.filename;
+  const filePath = path.join(__dirname, 'images', filename);
+  
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    res.redirect('/admin/upload');
+  } catch (err) {
+    console.error('Error deleting image:', err);
+    res.redirect('/admin/upload');
+  }
 });
 
 app.listen(PORT, () => {
