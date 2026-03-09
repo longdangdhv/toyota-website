@@ -227,8 +227,8 @@ app.post('/admin/cars/add', requireAuth, upload.single('imageFile'), async (req,
       imagePath = imagePath[imagePath.length - 1] || '';
     }
     
-    console.log('🖼️ Final image (base64):', imagePath.substring(0, 50) + '...');
-    
+    console.log('🖼️ Final image (base64):', imagePath ? imagePath.substring(0, 50) + '...' : '(none)');
+
     // Tạo ID mới
     const cars = await db.getAllCars();
     const newId = cars.length > 0 ? Math.max(...cars.map(c => c.id)) + 1 : 1;
@@ -294,8 +294,14 @@ app.post('/admin/cars/update/:id', requireAuth, upload.array('imageFiles', 10), 
       images = req.files.map(file => fileToBase64(file));
       mainImage = images[0]; // Ảnh đầu tiên làm ảnh đại diện
     } else if (req.body.images && req.body.images.trim()) {
-      // Lấy từ form (chọn từ thư viện)
-      images = req.body.images.split(',').filter(img => img.trim());
+      // Lấy từ form (chọn từ thư viện) - parse JSON array
+      try {
+        images = JSON.parse(req.body.images);
+        if (!Array.isArray(images)) images = [images];
+      } catch (e) {
+        // fallback: comma split (legacy)
+        images = req.body.images.split(',').filter(img => img.trim());
+      }
       mainImage = req.body.mainImage || images[0] || '';
     } else {
       // Không có ảnh mới → Giữ nguyên ảnh cũ
@@ -305,6 +311,9 @@ app.post('/admin/cars/update/:id', requireAuth, upload.array('imageFiles', 10), 
       }
     }
     
+    // Loại bỏ ảnh trùng lặp
+    images = [...new Set(images)];
+
     // Đảm bảo mainImage thuộc danh sách images
     if (mainImage && !images.includes(mainImage)) {
       images.unshift(mainImage);

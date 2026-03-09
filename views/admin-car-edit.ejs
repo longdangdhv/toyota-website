@@ -362,8 +362,8 @@
                         <small style="color: #666; display: block; margin-top: 5px;">Có thể chọn nhiều file cùng lúc (Ctrl + Click)</small>
                     </div>
                     
-                    <input type="hidden" id="images" name="images" value="<%= car.images && Array.isArray(car.images) ? car.images.join(',') : (car.image || '') %>">
-                    <input type="hidden" id="mainImage" name="mainImage" value="<%= car.image || '' %>">
+                    <input type="hidden" id="images" name="images" value="">
+                    <input type="hidden" id="mainImage" name="mainImage" value="">
                 </div>
                 
                 <div class="form-group">
@@ -395,11 +395,11 @@
             <% if (car.images && Array.isArray(car.images) && car.images.length > 0) { %>
                 selectedImagesList = <%- JSON.stringify(car.images) %>;
             <% } else if (car.image) { %>
-                selectedImagesList = ['<%= car.image %>'];
+                selectedImagesList = <%- JSON.stringify([car.image]) %>;
             <% } %>
             
-            mainImagePath = '<%= car.image || "" %>';
-            
+            mainImagePath = <%- JSON.stringify(car.image || '') %>;
+
             console.log('🔍 Loaded images:', selectedImagesList);
             console.log('⭐ Main image:', mainImagePath);
             
@@ -532,13 +532,13 @@
             const mainImageInput = document.getElementById('mainImage');
             
             if (imagesInput) {
-                imagesInput.value = selectedImagesList.join(',');
-                console.log('💾 Updated images input:', imagesInput.value);
+                imagesInput.value = JSON.stringify(selectedImagesList);
+                console.log('💾 Updated images count:', selectedImagesList.length);
             }
             
             if (mainImageInput) {
                 mainImageInput.value = mainImagePath;
-                console.log('⭐ Updated mainImage input:', mainImageInput.value);
+                console.log('⭐ Updated mainImage input');
             }
         }
         
