@@ -1,23 +1,6 @@
 node_modules/
 .env
-.env.local
-*.log
-.DS_Store
-
-# Old database files (before PostgreSQL migration)
 toyota.db
 *.db
-*.json
-database-file.js
-database-mongodb.js
-database-vercel.js
-database.js
-init-db.js
-fix-images-field.js
+npm-debug.log
 
-# Backup directories
-backup-*/
-
-# IDE
-.vscode/
-.idea/

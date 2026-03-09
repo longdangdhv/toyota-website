@@ -4,10 +4,8 @@ const fs = require('fs');
 const session = require('express-session');
 const multer = require('multer');
 
+// Load biến môi trường từ file .env (nếu có)
 // Sử dụng PostgreSQL database
-console.log('🐘 Using PostgreSQL database');
-const db = require('./database-postgresql');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
