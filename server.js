@@ -99,8 +99,19 @@ app.get('/tin-tuc/:id', async (req, res) => {
 });
 
 app.get('/khuyen-mai', async (req, res) => {
-  const promotions = await db.getAllPromotions();
-  res.render('promotions', { promotions });
+  try {
+    const rows = await db.getAllPromotions();
+    const promotions = (rows || []).map(p => ({
+      ...p,
+      applicableCars: p.applicable_cars || p.applicableCars || [],
+      details: p.details || [],
+      validUntil: p.valid_until || p.validUntil || ''
+    }));
+    res.render('promotions', { promotions });
+  } catch (err) {
+    console.error('Lỗi trang khuyến mãi:', err);
+    res.render('promotions', { promotions: [] });
+  }
 });
 
 app.get('/dang-ky-lai-thu', async (req, res) => {

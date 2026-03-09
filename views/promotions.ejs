@@ -60,7 +60,7 @@
             <div class="bg-gray-50 p-4 rounded-lg mb-4">
               <p class="text-sm text-gray-500 mb-2">Áp dụng cho:</p>
               <div class="flex flex-wrap gap-2">
-                <% promo.applicableCars.forEach(car => { %>
+                <% (promo.applicableCars || []).forEach(car => { %>
                 <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold"><%= car %></span>
                 <% }); %>
               </div>
@@ -69,7 +69,7 @@
             <div class="mb-4">
               <p class="font-semibold text-gray-900 mb-3">Chi tiết ưu đãi:</p>
               <ul class="space-y-2">
-                <% promo.details.forEach(detail => { %>
+                <% (promo.details || []).forEach(detail => { %>
                 <li class="flex items-start">
                   <span class="text-green-500 mr-2">✓</span>
                   <span class="text-gray-700 text-sm"><%= detail %></span>
@@ -79,7 +79,7 @@
             </div>
 
             <div class="text-sm text-gray-500 mb-4">
-              <span>⏰ Có hiệu lực đến: <strong><%= promo.validUntil %></strong></span>
+              <span>⏰ Có hiệu lực đến: <strong><%= promo.validUntil || promo.valid_until || 'N/A' %></strong></span>
             </div>
 
             <a href="/lien-he" class="block w-full bg-red-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-red-700 transition">Liên Hệ Ngay</a>
