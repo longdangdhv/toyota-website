@@ -367,8 +367,9 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="description">Mô tả</label>
+                    <label for="description">Mô tả (Bài viết về xe)</label>
                     <textarea id="description" name="description"><%= car.description %></textarea>
+                    <small style="color: #666; display: block; margin-top: 5px;">✍️ Soạn thảo văn bản với đầy đủ định dạng: căn lề, tiêu đề, chèn ảnh, bảng...</small>
                 </div>
                 
                 <div class="form-group checkbox-group">
@@ -384,6 +385,62 @@
         </div>
     </div>
     
+    <!-- TinyMCE CDN -->
+    <script src="https://cdn.tiny.cloud/1/2etkuqtd0naftcgirq6ue0s3lbyentl2eoyj5uabubm7oq9t/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#description',
+            language: 'vi',
+            language_url: 'https://cdn.jsdelivr.net/npm/tinymce-lang-vi@1.0.1/langs/vi.js',
+            height: 450,
+            menubar: true,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'wordcount', 'emoticons'
+            ],
+            toolbar: 'undo redo | styles | bold italic underline strikethrough | ' +
+                     'alignleft aligncenter alignright alignjustify | ' +
+                     'bullist numlist outdent indent | link image media table | ' +
+                     'forecolor backcolor | removeformat | fullscreen code',
+            toolbar_mode: 'wrap',
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            file_picker_callback: function(cb, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.onchange = function() {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+                    reader.onload = function() {
+                        var id = 'blobid' + (new Date()).getTime();
+                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                        var base64 = reader.result.split(',')[1];
+                        var blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+                        cb(blobInfo.blobUri(), { title: file.name });
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            },
+            content_style: 'body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; font-size: 15px; line-height: 1.7; color: #333; }',
+            style_formats: [
+                { title: 'Tiêu đề lớn', format: 'h2' },
+                { title: 'Tiêu đề vừa', format: 'h3' },
+                { title: 'Tiêu đề nhỏ', format: 'h4' },
+                { title: 'Đoạn văn', format: 'p' },
+                { title: 'Trích dẫn', block: 'blockquote' }
+            ],
+            setup: function(editor) {
+                editor.on('change', function() {
+                    editor.save();
+                });
+            }
+        });
+    </script>
     <script>
         // Mảng lưu các ảnh đã chọn
         let selectedImagesList = [];

@@ -8,6 +8,80 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     body { font-family: 'Inter', sans-serif; }
+
+    /* Rich text description styles */
+    .car-description h1, .car-description h2, .car-description h3,
+    .car-description h4, .car-description h5, .car-description h6 {
+      font-weight: 700;
+      color: #111827;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      line-height: 1.3;
+    }
+    .car-description h2 { font-size: 1.6rem; }
+    .car-description h3 { font-size: 1.35rem; }
+    .car-description h4 { font-size: 1.15rem; }
+    .car-description p {
+      color: #374151;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 1em;
+    }
+    .car-description ul, .car-description ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1em;
+      color: #374151;
+      line-height: 1.8;
+    }
+    .car-description ul { list-style-type: disc; }
+    .car-description ol { list-style-type: decimal; }
+    .car-description li { margin-bottom: 0.3em; }
+    .car-description img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 1.2em auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .car-description a {
+      color: #dc2626;
+      text-decoration: underline;
+    }
+    .car-description a:hover { color: #b91c1c; }
+    .car-description blockquote {
+      border-left: 4px solid #dc2626;
+      background: #fff5f5;
+      margin: 1.2em 0;
+      padding: 1em 1.5em;
+      color: #374151;
+      font-style: italic;
+      border-radius: 0 8px 8px 0;
+    }
+    .car-description table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2em 0;
+      font-size: 0.95rem;
+    }
+    .car-description th, .car-description td {
+      border: 1px solid #e5e7eb;
+      padding: 10px 14px;
+      text-align: left;
+    }
+    .car-description th {
+      background: #f3f4f6;
+      font-weight: 600;
+      color: #111827;
+    }
+    .car-description tr:nth-child(even) td { background: #f9fafb; }
+    .car-description strong { color: #111827; }
+    .car-description em { color: #4b5563; }
+    .car-description hr {
+      border: none;
+      border-top: 2px solid #e5e7eb;
+      margin: 2em 0;
+    }
   </style>
 </head>
 <body class="bg-gray-50">
@@ -231,7 +305,9 @@
       <!-- Description -->
       <div class="mt-16 bg-white p-8 rounded-2xl shadow-lg">
         <h2 class="text-3xl font-bold text-gray-900 mb-6">Mô Tả</h2>
-        <p class="text-gray-700 text-lg leading-relaxed"><%= car.description %></p>
+        <div class="prose prose-lg max-w-none car-description">
+          <%- car.description %>
+        </div>
       </div>
     </div>
   </section>
