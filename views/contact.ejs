@@ -49,45 +49,84 @@
             <h2 class="text-3xl font-bold text-gray-900 mb-8">Thông Tin Liên Hệ</h2>
             
             <div class="space-y-6">
+              <% if (showroomInfo.address) { %>
               <div class="bg-white p-6 rounded-xl shadow-lg">
                 <div class="flex items-start space-x-4">
                   <div class="text-4xl">📍</div>
                   <div>
                     <h3 class="font-bold text-lg mb-2">Địa chỉ Showroom</h3>
-                    <p class="text-gray-600">Số 7&9 Nguyễn Văn Linh, Phường Việt Hưng<br>Long Biên, Hà Nội, Việt Nam</p>
+                    <p class="text-gray-600"><%= showroomInfo.address %></p>
+                    <% if (showroomInfo.address2) { %>
+                    <p class="text-gray-600 mt-1"><%= showroomInfo.address2 %></p>
+                    <% } %>
                   </div>
                 </div>
               </div>
+              <% } %>
 
+              <% if (showroomInfo.hotline) { %>
               <div class="bg-white p-6 rounded-xl shadow-lg">
                 <div class="flex items-start space-x-4">
                   <div class="text-4xl">📞</div>
                   <div>
                     <h3 class="font-bold text-lg mb-2">Hotline</h3>
-                    <p class="text-gray-600"><a href="tel:0988888888" class="text-red-600 hover:underline text-xl font-bold">098 888 8888</a></p>
+                    <p class="text-gray-600"><a href="tel:<%= showroomInfo.hotline.replace(/\s/g,'') %>" class="text-red-600 hover:underline text-xl font-bold"><%= showroomInfo.hotline %></a></p>
+                    <% if (showroomInfo.hotline2) { %>
+                    <p class="text-gray-600 mt-1"><a href="tel:<%= showroomInfo.hotline2.replace(/\s/g,'') %>" class="text-red-600 hover:underline text-lg font-semibold"><%= showroomInfo.hotline2 %></a></p>
+                    <% } %>
                   </div>
                 </div>
               </div>
+              <% } %>
 
+              <% if (showroomInfo.email) { %>
               <div class="bg-white p-6 rounded-xl shadow-lg">
                 <div class="flex items-start space-x-4">
                   <div class="text-4xl">✉️</div>
                   <div>
                     <h3 class="font-bold text-lg mb-2">Email</h3>
-                    <p class="text-gray-600"><a href="mailto:info@toyota.vn" class="text-red-600 hover:underline">info@toyota.vn</a></p>
+                    <p class="text-gray-600"><a href="mailto:<%= showroomInfo.email %>" class="text-red-600 hover:underline"><%= showroomInfo.email %></a></p>
+                    <% if (showroomInfo.email2) { %>
+                    <p class="text-gray-600 mt-1"><a href="mailto:<%= showroomInfo.email2 %>" class="text-red-600 hover:underline"><%= showroomInfo.email2 %></a></p>
+                    <% } %>
                   </div>
                 </div>
               </div>
+              <% } %>
 
+              <% if (showroomInfo.working_hours) { %>
               <div class="bg-white p-6 rounded-xl shadow-lg">
                 <div class="flex items-start space-x-4">
                   <div class="text-4xl">⏰</div>
                   <div>
                     <h3 class="font-bold text-lg mb-2">Giờ làm việc</h3>
-                    <p class="text-gray-600">Thứ 2 - Chủ nhật: 8:00 - 18:00</p>
+                    <p class="text-gray-600"><%= showroomInfo.working_hours %></p>
                   </div>
                 </div>
               </div>
+              <% } %>
+
+              <% if (showroomInfo.facebook_url || showroomInfo.zalo_url || showroomInfo.youtube_url) { %>
+              <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex items-start space-x-4">
+                  <div class="text-4xl">🌐</div>
+                  <div>
+                    <h3 class="font-bold text-lg mb-2">Mạng xã hội</h3>
+                    <div class="flex gap-4 flex-wrap">
+                      <% if (showroomInfo.facebook_url) { %>
+                      <a href="<%= showroomInfo.facebook_url %>" target="_blank" class="text-blue-600 hover:underline font-medium">📘 Facebook</a>
+                      <% } %>
+                      <% if (showroomInfo.zalo_url) { %>
+                      <a href="<%= showroomInfo.zalo_url %>" target="_blank" class="text-blue-400 hover:underline font-medium">💬 Zalo</a>
+                      <% } %>
+                      <% if (showroomInfo.youtube_url) { %>
+                      <a href="<%= showroomInfo.youtube_url %>" target="_blank" class="text-red-600 hover:underline font-medium">▶️ YouTube</a>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% } %>
             </div>
           </div>
 
@@ -169,58 +208,6 @@
       }, 5000);
     }
 
-    function updateCalculation() {
-      const price = parseFloat(document.getElementById('carSelect').value) || 0;
-      const downPaymentPercent = parseInt(document.getElementById('downPayment').value);
-      const loanTerm = parseInt(document.getElementById('loanTerm').value);
-      const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
-      
-      document.getElementById('downPaymentPercent').textContent = downPaymentPercent;
-      document.getElementById('carPrice').value = price ? price.toLocaleString('vi-VN') + ' VNĐ' : '';
-      
-      const downPaymentAmount = price * (downPaymentPercent / 100);
-      document.getElementById('downPaymentAmount').value = downPaymentAmount ? downPaymentAmount.toLocaleString('vi-VN') + ' VNĐ' : '';
-      
-      const loanAmount = price - downPaymentAmount;
-      document.getElementById('loanAmount').textContent = loanAmount ? loanAmount.toLocaleString('vi-VN') + ' VNĐ' : '0 VNĐ';
-      
-      if (loanAmount > 0) {
-        const monthlyRate = interestRate / 12;
-        const numPayments = loanTerm * 12;
-        const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
-        document.getElementById('monthlyPayment').textContent = monthlyPayment.toLocaleString('vi-VN', {maximumFractionDigits: 0}) + ' VNĐ';
-      } else {
-        document.getElementById('monthlyPayment').textContent = '0 VNĐ';
-      }
-    }
-
-    document.getElementById('consultForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData);
-      
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...data, type: 'installment' })
-        });
-        const result = await response.json();
-        
-        if (result.success) {
-          showNotification(result.message, 'success');
-          e.target.reset();
-          
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 5000);
-        } else {
-          showNotification(result.message, 'error');
-        }
-      } catch (error) {
-        showNotification('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
-      }
-    });
 
     document.getElementById('contactForm').addEventListener('submit', async (e) => {
       e.preventDefault();

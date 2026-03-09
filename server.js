@@ -113,8 +113,14 @@ app.get('/tra-gop', async (req, res) => {
   res.render('installment', { cars });
 });
 
-app.get('/lien-he', (req, res) => {
-  res.render('contact');
+app.get('/lien-he', async (req, res) => {
+  try {
+    const showroomInfo = await db.getShowroomInfo();
+    res.render('contact', { showroomInfo: showroomInfo || {} });
+  } catch (err) {
+    console.error('Error loading showroom info:', err);
+    res.render('contact', { showroomInfo: {} });
+  }
 });
 
 // API endpoints for form submissions
@@ -474,6 +480,37 @@ app.post('/admin/upload/delete', requireAuth, async (req, res) => {
     console.error('Error deleting image:', err);
   }
   res.redirect('/admin/upload');
+});
+
+// Admin showroom info management
+app.get('/admin/showroom', requireAuth, async (req, res) => {
+  const info = await db.getShowroomInfo();
+  res.render('admin-showroom', { info: info || {}, message: null });
+});
+
+app.post('/admin/showroom', requireAuth, async (req, res) => {
+  try {
+    await db.updateShowroomInfo({
+      showroom_name: req.body.showroom_name || '',
+      hotline: req.body.hotline || '',
+      hotline2: req.body.hotline2 || '',
+      email: req.body.email || '',
+      email2: req.body.email2 || '',
+      address: req.body.address || '',
+      address2: req.body.address2 || '',
+      working_hours: req.body.working_hours || '',
+      facebook_url: req.body.facebook_url || '',
+      zalo_url: req.body.zalo_url || '',
+      youtube_url: req.body.youtube_url || '',
+      map_embed: req.body.map_embed || ''
+    });
+    const info = await db.getShowroomInfo();
+    res.render('admin-showroom', { info: info || {}, message: 'Đã lưu thông tin thành công!' });
+  } catch (err) {
+    console.error('Error updating showroom info:', err);
+    const info = await db.getShowroomInfo();
+    res.render('admin-showroom', { info: info || {}, message: 'Có lỗi xảy ra, vui lòng thử lại!' });
+  }
 });
 
 app.listen(PORT, () => {

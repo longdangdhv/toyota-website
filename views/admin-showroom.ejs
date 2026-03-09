@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Showroom - Toyota Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .header {
+            background: #eb0a1e; color: white;
+            padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 24px; }
+        .btn-logout {
+            padding: 8px 16px; background: rgba(255,255,255,0.2);
+            color: white; text-decoration: none; border-radius: 5px;
+        }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .breadcrumb { margin-bottom: 20px; color: #666; }
+        .breadcrumb a { color: #eb0a1e; text-decoration: none; }
+        .content {
+            background: white; border-radius: 8px;
+            padding: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        h2 { color: #333; margin-bottom: 25px; }
+        .section-title {
+            font-size: 16px; font-weight: 600; color: #eb0a1e;
+            border-bottom: 2px solid #eb0a1e;
+            padding-bottom: 8px; margin: 28px 0 16px;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label {
+            display: block; margin-bottom: 7px;
+            color: #333; font-weight: 500; font-size: 14px;
+        }
+        label .hint { color: #999; font-weight: 400; font-size: 12px; margin-left: 6px; }
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        textarea {
+            width: 100%; padding: 10px 12px;
+            border: 1px solid #ddd; border-radius: 5px;
+            font-size: 14px; font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none; border-color: #eb0a1e;
+            box-shadow: 0 0 0 3px rgba(235,10,30,0.08);
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        textarea.map-embed { min-height: 120px; font-size: 12px; font-family: monospace; }
+        .btn-group { display: flex; gap: 12px; margin-top: 30px; }
+        .btn {
+            padding: 12px 28px; border: none; border-radius: 5px;
+            font-size: 15px; cursor: pointer; text-decoration: none;
+            display: inline-block; font-weight: 500; transition: all 0.2s;
+        }
+        .btn-primary { background: #eb0a1e; color: white; }
+        .btn-primary:hover { background: #c41230; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .alert {
+            padding: 14px 18px; border-radius: 6px;
+            margin-bottom: 22px; font-size: 15px; font-weight: 500;
+        }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .icon { margin-right: 6px; }
+        .preview-box {
+            background: #f9f9f9; border: 1px dashed #ddd;
+            border-radius: 8px; padding: 18px; margin-top: 20px;
+        }
+        .preview-box h4 { color: #333; margin-bottom: 12px; font-size: 14px; }
+        .preview-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; font-size: 14px; color: #444; }
+        .preview-row .label-col { min-width: 140px; font-weight: 500; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 TOYOTA Admin</h1>
+        <a href="/admin/logout" class="btn-logout">Đăng xuất</a>
+    </div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/admin">Dashboard</a> /
+            <strong>Thông tin Showroom</strong>
+        </div>
+
+        <div class="content">
+            <h2>🏢 Quản lý thông tin Showroom & Liên hệ</h2>
+
+            <% if (message) { %>
+                <div class="alert <%= message.includes('lỗi') || message.includes('Lỗi') ? 'alert-error' : 'alert-success' %>">
+                    <%= message.includes('lỗi') || message.includes('Lỗi') ? '❌' : '✅' %> <%= message %>
+                </div>
+            <% } %>
+
+            <form method="POST" action="/admin/showroom">
+
+                <div class="section-title">🏪 Thông tin Showroom</div>
+
+                <div class="form-group">
+                    <label for="showroom_name">Tên Showroom / Đại lý</label>
+                    <input type="text" id="showroom_name" name="showroom_name"
+                           value="<%= info.showroom_name || '' %>"
+                           placeholder="VD: Toyota Đại Lý Chính Thức TP.HCM">
+                </div>
+
+                <div class="form-group">
+                    <label for="working_hours">Giờ làm việc</label>
+                    <input type="text" id="working_hours" name="working_hours"
+                           value="<%= info.working_hours || '' %>"
+                           placeholder="VD: Thứ 2 - Thứ 7: 7:30 - 18:00 | Chủ nhật: 8:00 - 17:00">
+                </div>
+
+                <div class="section-title">📞 Hotline & Liên hệ</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hotline">Hotline chính <span class="hint">(bắt buộc)</span></label>
+                        <input type="text" id="hotline" name="hotline"
+                               value="<%= info.hotline || '' %>"
+                               placeholder="VD: 1800 1234 hoặc 0901 234 567">
+                    </div>
+                    <div class="form-group">
+                        <label for="hotline2">Hotline phụ <span class="hint">(tuỳ chọn)</span></label>
+                        <input type="text" id="hotline2" name="hotline2"
+                               value="<%= info.hotline2 || '' %>"
+                               placeholder="VD: 0902 345 678">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email chính</label>
+                        <input type="email" id="email" name="email"
+                               value="<%= info.email || '' %>"
+                               placeholder="VD: info@toyota.vn">
+                    </div>
+                    <div class="form-group">
+                        <label for="email2">Email phụ <span class="hint">(tuỳ chọn)</span></label>
+                        <input type="email" id="email2" name="email2"
+                               value="<%= info.email2 || '' %>"
+                               placeholder="VD: sales@toyota.vn">
+                    </div>
+                </div>
+
+                <div class="section-title">📍 Địa chỉ Showroom</div>
+
+                <div class="form-group">
+                    <label for="address">Địa chỉ Showroom 1 <span class="hint">(bắt buộc)</span></label>
+                    <textarea id="address" name="address"
+                              placeholder="VD: Số 123, Đường Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh"><%= info.address || '' %></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="address2">Địa chỉ Showroom 2 <span class="hint">(tuỳ chọn)</span></label>
+                    <textarea id="address2" name="address2"
+                              placeholder="VD: Số 456, Đường Trường Chinh, Quận Tân Bình, TP. Hồ Chí Minh"><%= info.address2 || '' %></textarea>
+                </div>
+
+                <div class="section-title">🌐 Mạng xã hội</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="facebook_url">Facebook</label>
+                        <input type="url" id="facebook_url" name="facebook_url"
+                               value="<%= info.facebook_url || '' %>"
+                               placeholder="https://facebook.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="zalo_url">Zalo OA</label>
+                        <input type="url" id="zalo_url" name="zalo_url"
+                               value="<%= info.zalo_url || '' %>"
+                               placeholder="https://zalo.me/...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="youtube_url">YouTube</label>
+                    <input type="url" id="youtube_url" name="youtube_url"
+                           value="<%= info.youtube_url || '' %>"
+                           placeholder="https://youtube.com/@...">
+                </div>
+
+                <div class="section-title">🗺️ Google Maps Embed</div>
+
+                <div class="form-group">
+                    <label for="map_embed">
+                        Mã nhúng Google Maps
+                        <span class="hint">— Vào Google Maps → Chia sẻ → Nhúng bản đồ → Copy thẻ &lt;iframe&gt;</span>
+                    </label>
+                    <textarea id="map_embed" name="map_embed" class="map-embed"
+                              placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" ...></iframe>'><%= info.map_embed || '' %></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">💾 Lưu thông tin</button>
+                    <a href="/admin" class="btn btn-secondary">↩ Quay lại Dashboard</a>
+                </div>
+            </form>
+
+            <% if (info && (info.showroom_name || info.hotline || info.address)) { %>
+            <div class="preview-box" style="margin-top: 30px;">
+                <h4>👁️ Xem trước thông tin hiển thị:</h4>
+                <% if (info.showroom_name) { %>
+                <div class="preview-row">
+                    <span class="label-col">🏪 Showroom:</span>
+                    <span><%= info.showroom_name %></span>
+                </div>
+                <% } %>
+                <% if (info.hotline) { %>
+                <div class="preview-row">
+                    <span class="label-col">📞 Hotline:</span>
+                    <span><%= info.hotline %><%= info.hotline2 ? ' | ' + info.hotline2 : '' %></span>
+                </div>
+                <% } %>
+                <% if (info.email) { %>
+                <div class="preview-row">
+                    <span class="label-col">✉️ Email:</span>
+                    <span><%= info.email %><%= info.email2 ? ' | ' + info.email2 : '' %></span>
+                </div>
+                <% } %>
+                <% if (info.address) { %>
+                <div class="preview-row">
+                    <span class="label-col">📍 Địa chỉ:</span>
+                    <span><%= info.address %></span>
+                </div>
+                <% } %>
+                <% if (info.address2) { %>
+                <div class="preview-row">
+                    <span class="label-col">📍 Địa chỉ 2:</span>
+                    <span><%= info.address2 %></span>
+                </div>
+                <% } %>
+                <% if (info.working_hours) { %>
+                <div class="preview-row">
+                    <span class="label-col">🕐 Giờ mở cửa:</span>
+                    <span><%= info.working_hours %></span>
+                </div>
+                <% } %>
+                <% if (info.facebook_url || info.zalo_url || info.youtube_url) { %>
+                <div class="preview-row">
+                    <span class="label-col">🌐 Mạng XH:</span>
+                    <span>
+                        <% if (info.facebook_url) { %><a href="<%= info.facebook_url %>" target="_blank">Facebook</a> <% } %>
+                        <% if (info.zalo_url) { %><a href="<%= info.zalo_url %>" target="_blank">Zalo</a> <% } %>
+                        <% if (info.youtube_url) { %><a href="<%= info.youtube_url %>" target="_blank">YouTube</a> <% } %>
+                    </span>
+                </div>
+                <% } %>
+                <% if (info.map_embed) { %>
+                <div style="margin-top: 14px;">
+                    <div style="font-size: 13px; font-weight: 500; color: #666; margin-bottom: 8px;">🗺️ Bản đồ:</div>
+                    <div style="border-radius: 6px; overflow: hidden; max-width: 100%;">
+                        <%- info.map_embed %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>
+

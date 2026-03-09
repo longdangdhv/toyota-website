@@ -118,6 +118,40 @@ async function initDatabase() {
       );
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS showroom_info (
+        id SERIAL PRIMARY KEY,
+        showroom_name VARCHAR(255),
+        hotline VARCHAR(100),
+        hotline2 VARCHAR(100),
+        email VARCHAR(255),
+        email2 VARCHAR(255),
+        address TEXT,
+        address2 TEXT,
+        working_hours VARCHAR(255),
+        facebook_url VARCHAR(255),
+        zalo_url VARCHAR(255),
+        youtube_url VARCHAR(255),
+        map_embed TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Insert default showroom info if not exists
+    const existing = await client.query('SELECT id FROM showroom_info LIMIT 1');
+    if (existing.rows.length === 0) {
+      await client.query(`
+        INSERT INTO showroom_info (showroom_name, hotline, email, address, working_hours)
+        VALUES ($1, $2, $3, $4, $5)
+      `, [
+        'Toyota Đại Lý',
+        '1800 1234',
+        'info@toyota.vn',
+        'Số 1, Đường Toyota, Quận 1, TP.HCM',
+        'Thứ 2 - Thứ 7: 7:30 - 18:00 | Chủ nhật: 8:00 - 17:00'
+      ]);
+    }
+
     console.log('✅ Database tables created');
   } catch (error) {
     console.error('❌ Error initializing database:', error);
@@ -328,5 +362,53 @@ module.exports = {
   deleteUploadedImage: async (id) => {
     const result = await pool.query('DELETE FROM uploaded_images WHERE id = $1', [id]);
     return { changes: result.rowCount };
+  },
+
+  // Showroom Info
+  getShowroomInfo: async () => {
+    const result = await pool.query('SELECT * FROM showroom_info ORDER BY id LIMIT 1');
+    return result.rows[0] || null;
+  },
+
+  updateShowroomInfo: async (data) => {
+    const existing = await pool.query('SELECT id FROM showroom_info LIMIT 1');
+    if (existing.rows.length > 0) {
+      const result = await pool.query(
+        `UPDATE showroom_info SET
+          showroom_name = $1,
+          hotline = $2,
+          hotline2 = $3,
+          email = $4,
+          email2 = $5,
+          address = $6,
+          address2 = $7,
+          working_hours = $8,
+          facebook_url = $9,
+          zalo_url = $10,
+          youtube_url = $11,
+          map_embed = $12,
+          updated_at = CURRENT_TIMESTAMP
+         WHERE id = $13`,
+        [
+          data.showroom_name, data.hotline, data.hotline2,
+          data.email, data.email2, data.address, data.address2,
+          data.working_hours, data.facebook_url, data.zalo_url,
+          data.youtube_url, data.map_embed, existing.rows[0].id
+        ]
+      );
+      return { changes: result.rowCount };
+    } else {
+      const result = await pool.query(
+        `INSERT INTO showroom_info (showroom_name, hotline, hotline2, email, email2, address, address2, working_hours, facebook_url, zalo_url, youtube_url, map_embed)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
+        [
+          data.showroom_name, data.hotline, data.hotline2,
+          data.email, data.email2, data.address, data.address2,
+          data.working_hours, data.facebook_url, data.zalo_url,
+          data.youtube_url, data.map_embed
+        ]
+      );
+      return { lastInsertRowid: result.rows[0].id };
+    }
   }
 };
