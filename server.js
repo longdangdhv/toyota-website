@@ -4,37 +4,15 @@ const fs = require('fs');
 const session = require('express-session');
 const multer = require('multer');
 
-// Sử dụng database phù hợp với môi trường
-const useMongoDB = process.env.MONGODB_URI;
-
-let db;
-if (useMongoDB) {
-  console.log('🔵 Using MongoDB database');
-  db = require('./database-mongodb');
-} else {
-  console.log('📁 Using File-based database');
-  db = require('./database-file');
-}
+// Sử dụng PostgreSQL database
+console.log('🐘 Using PostgreSQL database');
+const db = require('./database-postgresql');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Cấu hình multer để upload ảnh
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, 'images');
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const customName = req.body.imageName || 'image-' + Date.now();
-    // Thêm timestamp để tránh trùng tên khi upload nhiều file
-    cb(null, customName + '-' + Date.now() + ext);
-  }
-});
+// Cấu hình multer để upload ảnh (lưu vào memory để convert sang base64)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -49,6 +27,11 @@ const upload = multer({
     cb(new Error('Chỉ chấp nhận file ảnh JPG hoặc PNG!'));
   }
 });
+
+// Helper function để convert file thành base64
+function fileToBase64(file) {
+  return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+}
 
 // Middleware
 app.use(express.static('public'));
@@ -74,10 +57,10 @@ const requireAuth = (req, res, next) => {
 };
 
 // Routes
-app.get('/', (req, res) => {
-  const featuredCars = db.getFeaturedCars();
-  const latestNews = db.getLatestNews(3);
-  const activePromotions = db.getActivePromotions(2);
+app.get('/', async (req, res) => {
+  const featuredCars = await db.getFeaturedCars();
+  const latestNews = await db.getLatestNews(3);
+  const activePromotions = await db.getActivePromotions(2);
   
   // Get banner images
   let banners = [];
@@ -93,40 +76,40 @@ app.get('/', (req, res) => {
   res.render('index', { featuredCars, latestNews, activePromotions, banners });
 });
 
-app.get('/san-pham', (req, res) => {
-  const cars = db.getAllCars();
+app.get('/san-pham', async (req, res) => {
+  const cars = await db.getAllCars();
   res.render('products', { cars });
 });
 
-app.get('/san-pham/:slug', (req, res) => {
-  const car = db.getCarBySlug(req.params.slug);
+app.get('/san-pham/:slug', async (req, res) => {
+  const car = await db.getCarBySlug(req.params.slug);
   if (!car) return res.status(404).send('Không tìm thấy xe');
   res.render('product-detail', { car });
 });
 
-app.get('/tin-tuc', (req, res) => {
-  const news = db.getAllNews();
+app.get('/tin-tuc', async (req, res) => {
+  const news = await db.getAllNews();
   res.render('news', { news });
 });
 
-app.get('/tin-tuc/:id', (req, res) => {
-  const article = db.getNewsById(parseInt(req.params.id));
+app.get('/tin-tuc/:id', async (req, res) => {
+  const article = await db.getNewsById(parseInt(req.params.id));
   if (!article) return res.status(404).send('Không tìm thấy tin tức');
   res.render('news-detail', { article });
 });
 
-app.get('/khuyen-mai', (req, res) => {
-  const promotions = db.getAllPromotions();
+app.get('/khuyen-mai', async (req, res) => {
+  const promotions = await db.getAllPromotions();
   res.render('promotions', { promotions });
 });
 
-app.get('/dang-ky-lai-thu', (req, res) => {
-  const cars = db.getAllCars();
+app.get('/dang-ky-lai-thu', async (req, res) => {
+  const cars = await db.getAllCars();
   res.render('test-drive', { cars });
 });
 
-app.get('/tra-gop', (req, res) => {
-  const cars = db.getAllCars();
+app.get('/tra-gop', async (req, res) => {
+  const cars = await db.getAllCars();
   res.render('installment', { cars });
 });
 
@@ -190,42 +173,38 @@ app.get('/admin/logout', (req, res) => {
 });
 
 // Admin dashboard
-app.get('/admin', requireAuth, (req, res) => {
+app.get('/admin', requireAuth, async (req, res) => {
   const stats = {
-    totalCars: db.getAllCars().length,
-    featuredCars: db.getFeaturedCars().length,
-    totalNews: db.getAllNews().length,
-    totalPromotions: db.getAllPromotions().length,
-    testDrives: db.getAllTestDrives().length,
-    quotes: db.getAllQuotes().length,
-    contacts: db.getAllContacts().length
+    totalCars: (await db.getAllCars()).length,
+    featuredCars: (await db.getFeaturedCars()).length,
+    totalNews: (await db.getAllNews()).length,
+    totalPromotions: (await db.getAllPromotions()).length,
+    testDrives: (await db.getAllTestDrives()).length,
+    quotes: (await db.getAllQuotes()).length,
+    contacts: (await db.getAllContacts()).length
   };
   res.render('admin-dashboard', { username: req.session.username, stats });
 });
 
 // Admin cars management
-app.get('/admin/cars', requireAuth, (req, res) => {
-  const cars = db.getAllCars();
+app.get('/admin/cars', requireAuth, async (req, res) => {
+  const cars = await db.getAllCars();
   res.render('admin-cars', { cars });
 });
 
-app.get('/admin/cars/add', requireAuth, (req, res) => {
-  // Lấy danh sách ảnh có sẵn
-  const imagesPath = path.join(__dirname, 'images');
+app.get('/admin/cars/add', requireAuth, async (req, res) => {
+  // Lấy danh sách ảnh từ database
   let availableImages = [];
   
   try {
-    if (fs.existsSync(imagesPath)) {
-      const files = fs.readdirSync(imagesPath);
-      availableImages = files
-        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
-        .map(file => ({
-          name: file,
-          path: `/images/${file}`
-        }));
-    }
+    const uploadedImages = await db.getAllUploadedImages();
+    availableImages = uploadedImages.map(img => ({
+      id: img.id,
+      name: img.name || `image-${img.id}`,
+      path: img.image_data
+    }));
   } catch (err) {
-    console.error('Error reading images:', err);
+    console.error('Error reading images from database:', err);
   }
   
   res.render('admin-car-add', { availableImages });
@@ -238,9 +217,9 @@ app.post('/admin/cars/add', requireAuth, upload.single('imageFile'), async (req,
     
     let imagePath = req.body.image || '';
     
-    // Nếu có upload file mới
+    // Nếu có upload file mới, convert sang base64
     if (req.file) {
-      imagePath = `/images/${req.file.filename}`;
+      imagePath = fileToBase64(req.file);
     }
     
     // Đảm bảo imagePath là string
@@ -248,10 +227,10 @@ app.post('/admin/cars/add', requireAuth, upload.single('imageFile'), async (req,
       imagePath = imagePath[imagePath.length - 1] || '';
     }
     
-    console.log('🖼️ Final image path:', imagePath);
+    console.log('🖼️ Final image (base64):', imagePath.substring(0, 50) + '...');
     
     // Tạo ID mới
-    const cars = db.getAllCars();
+    const cars = await db.getAllCars();
     const newId = cars.length > 0 ? Math.max(...cars.map(c => c.id)) + 1 : 1;
     
     const carData = {
@@ -262,6 +241,7 @@ app.post('/admin/cars/add', requireAuth, upload.single('imageFile'), async (req,
       price: req.body.price || '',
       priceRange: req.body.priceRange || '',
       image: imagePath,
+      images: imagePath ? [imagePath] : [], // Lưu ảnh vào array
       featured: req.body.featured === 'on' ? 1 : 0,
       category: req.body.category,
       description: req.body.description || ''
@@ -269,7 +249,7 @@ app.post('/admin/cars/add', requireAuth, upload.single('imageFile'), async (req,
     
     console.log('✅ Car data to save:', carData);
     
-    db.addCar(carData);
+    await db.addCar(carData);
     res.redirect('/admin/cars');
   } catch (err) {
     console.error('Error adding car:', err);
@@ -277,26 +257,22 @@ app.post('/admin/cars/add', requireAuth, upload.single('imageFile'), async (req,
   }
 });
 
-app.get('/admin/cars/edit/:id', requireAuth, (req, res) => {
-  const car = db.getCarById(parseInt(req.params.id));
+app.get('/admin/cars/edit/:id', requireAuth, async (req, res) => {
+  const car = await db.getCarById(parseInt(req.params.id));
   if (!car) return res.status(404).send('Không tìm thấy xe');
   
-  // Lấy danh sách ảnh có sẵn
-  const imagesPath = path.join(__dirname, 'images');
+  // Lấy danh sách ảnh từ database
   let availableImages = [];
   
   try {
-    if (fs.existsSync(imagesPath)) {
-      const files = fs.readdirSync(imagesPath);
-      availableImages = files
-        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
-        .map(file => ({
-          name: file,
-          path: `/images/${file}`
-        }));
-    }
+    const uploadedImages = await db.getAllUploadedImages();
+    availableImages = uploadedImages.map(img => ({
+      id: img.id,
+      name: img.name || `image-${img.id}`,
+      path: img.image_data
+    }));
   } catch (err) {
-    console.error('Error reading images:', err);
+    console.error('Error reading images from database:', err);
   }
   
   res.render('admin-car-edit', { car, availableImages });
@@ -308,14 +284,14 @@ app.post('/admin/cars/update/:id', requireAuth, upload.array('imageFiles', 10), 
     console.log('📁 Files uploaded:', req.files);
     
     // Lấy xe hiện tại từ database
-    const currentCar = db.getCarById(parseInt(req.params.id));
+    const currentCar = await db.getCarById(parseInt(req.params.id));
     
     let images = [];
     let mainImage = req.body.mainImage || '';
     
-    // Nếu có upload file mới
+    // Nếu có upload file mới, convert sang base64
     if (req.files && req.files.length > 0) {
-      images = req.files.map(file => `/images/${file.filename}`);
+      images = req.files.map(file => fileToBase64(file));
       mainImage = images[0]; // Ảnh đầu tiên làm ảnh đại diện
     } else if (req.body.images && req.body.images.trim()) {
       // Lấy từ form (chọn từ thư viện)
@@ -358,7 +334,7 @@ app.post('/admin/cars/update/:id', requireAuth, upload.array('imageFiles', 10), 
     
     console.log('✅ Car data to update:', carData);
     
-    db.updateCar(carData);
+    await db.updateCar(carData);
     res.redirect('/admin/cars');
   } catch (err) {
     console.error('Error updating car:', err);
@@ -367,14 +343,14 @@ app.post('/admin/cars/update/:id', requireAuth, upload.array('imageFiles', 10), 
 });
 
 // Admin news management
-app.get('/admin/news', requireAuth, (req, res) => {
-  const news = db.getAllNews();
+app.get('/admin/news', requireAuth, async (req, res) => {
+  const news = await db.getAllNews();
   res.render('admin-news', { news });
 });
 
 // Admin promotions management
-app.get('/admin/promotions', requireAuth, (req, res) => {
-  const promotions = db.getAllPromotions();
+app.get('/admin/promotions', requireAuth, async (req, res) => {
+  const promotions = await db.getAllPromotions();
   res.render('admin-promotions', { promotions });
 });
 
@@ -417,20 +393,17 @@ app.get('/admin/contacts/search', requireAuth, async (req, res) => {
 });
 
 // Admin upload routes
-app.get('/admin/upload', requireAuth, (req, res) => {
-  const imagesPath = path.join(__dirname, 'images');
+app.get('/admin/upload', requireAuth, async (req, res) => {
   let images = [];
   
   try {
-    if (fs.existsSync(imagesPath)) {
-      const files = fs.readdirSync(imagesPath);
-      images = files
-        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
-        .map(file => ({
-          name: file,
-          path: `/images/${file}`
-        }));
-    }
+    // Lấy tất cả ảnh đã upload từ database
+    const uploadedImages = await db.getAllUploadedImages();
+    images = uploadedImages.map(img => ({
+      id: img.id,
+      name: img.name || `image-${img.id}`,
+      path: img.image_data
+    }));
   } catch (err) {
     console.error('Error reading images:', err);
   }
@@ -438,28 +411,39 @@ app.get('/admin/upload', requireAuth, (req, res) => {
   res.render('admin-upload', { images, message: null, messageType: null });
 });
 
-app.post('/admin/upload', requireAuth, upload.single('image'), (req, res) => {
-  const imagesPath = path.join(__dirname, 'images');
+app.post('/admin/upload', requireAuth, upload.single('image'), async (req, res) => {
   let images = [];
+  let uploadSuccess = false;
   
   try {
-    if (fs.existsSync(imagesPath)) {
-      const files = fs.readdirSync(imagesPath);
-      images = files
-        .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
-        .map(file => ({
-          name: file,
-          path: `/images/${file}`
-        }));
+    // Nếu có file upload, lưu vào database
+    if (req.file) {
+      const base64Image = fileToBase64(req.file);
+      const imageName = req.body.imageName || `image-${Date.now()}`;
+      
+      console.log('💾 Saving image to database:', imageName);
+      const result = await db.saveUploadedImage(imageName, base64Image);
+      console.log('✅ Image saved with ID:', result.lastInsertRowid);
+      uploadSuccess = true;
     }
+    
+    // Lấy lại danh sách ảnh từ database
+    const uploadedImages = await db.getAllUploadedImages();
+    images = uploadedImages.map(img => ({
+      id: img.id,
+      name: img.name || `image-${img.id}`,
+      path: img.image_data
+    }));
+    
+    console.log('📊 Total images in database:', images.length);
   } catch (err) {
-    console.error('Error reading images:', err);
+    console.error('❌ Error uploading image:', err);
   }
   
-  if (req.file) {
+  if (uploadSuccess) {
     res.render('admin-upload', { 
       images, 
-      message: `Upload thành công: ${req.file.filename}`,
+      message: `Upload thành công`,
       messageType: 'success'
     });
   } else {
@@ -471,19 +455,16 @@ app.post('/admin/upload', requireAuth, upload.single('image'), (req, res) => {
   }
 });
 
-app.post('/admin/upload/delete', requireAuth, (req, res) => {
-  const filename = req.body.filename;
-  const filePath = path.join(__dirname, 'images', filename);
-  
+app.post('/admin/upload/delete', requireAuth, async (req, res) => {
   try {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    const imageId = req.body.imageId;
+    if (imageId) {
+      await db.deleteUploadedImage(parseInt(imageId));
     }
-    res.redirect('/admin/upload');
   } catch (err) {
     console.error('Error deleting image:', err);
-    res.redirect('/admin/upload');
   }
+  res.redirect('/admin/upload');
 });
 
 app.listen(PORT, () => {

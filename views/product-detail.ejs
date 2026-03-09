@@ -54,10 +54,14 @@
               <% 
                 let images = [];
                 if (car.images && Array.isArray(car.images) && car.images.length > 0) {
-                  images = car.images;
-                } else if (car.image) {
+                  // Lọc bỏ ảnh lỗi hoặc rỗng
+                  images = car.images.filter(img => img && img.trim() !== '');
+                } else if (car.image && car.image.trim() !== '') {
                   images = [car.image];
-                } else {
+                }
+                
+                // Fallback nếu không có ảnh
+                if (images.length === 0) {
                   images = ['/images/placeholder.jpg'];
                 }
               %>

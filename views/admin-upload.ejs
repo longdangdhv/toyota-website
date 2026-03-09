@@ -76,7 +76,7 @@
             <img src="<%= image.path %>" alt="<%= image.name %>">
             <div class="image-name"><%= image.name %></div>
             <form action="/admin/upload/delete" method="POST" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa ảnh này?')">
-              <input type="hidden" name="filename" value="<%= image.name %>">
+              <input type="hidden" name="imageId" value="<%= image.id %>">
               <button type="submit" class="delete-btn">🗑️ Xóa</button>
             </form>
           </div>
