@@ -8,6 +8,8 @@ const promotionsFile = path.join(__dirname, 'promotions.json');
 const testDrivesFile = path.join(__dirname, 'data-test-drives.json');
 const quotesFile = path.join(__dirname, 'data-quotes.json');
 const contactsFile = path.join(__dirname, 'data-contacts.json');
+const imagesFile = path.join(__dirname, 'data-images.json');
+const showroomFile = path.join(__dirname, 'data-showroom.json');
 
 // Đọc dữ liệu từ file
 const readJSON = (filePath, defaultValue = []) => {
@@ -165,5 +167,40 @@ module.exports = {
       (contact.email && contact.email.toLowerCase().includes(search)) ||
       (contact.message && contact.message.toLowerCase().includes(search))
     ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  },
+
+  // Uploaded Images - lưu vào file JSON
+  getAllUploadedImages: () => {
+    return readJSON(imagesFile, []);
+  },
+
+  saveUploadedImage: (name, imageData) => {
+    const images = readJSON(imagesFile, []);
+    const newImage = {
+      id: images.length > 0 ? Math.max(...images.map(i => i.id || 0)) + 1 : 1,
+      name,
+      image_data: imageData,
+      created_at: new Date().toISOString()
+    };
+    images.push(newImage);
+    writeJSON(imagesFile, images);
+    return { lastInsertRowid: newImage.id };
+  },
+
+  deleteUploadedImage: (id) => {
+    const images = readJSON(imagesFile, []);
+    const filtered = images.filter(img => img.id !== id);
+    writeJSON(imagesFile, filtered);
+    return { changes: images.length - filtered.length };
+  },
+
+  // Showroom Info
+  getShowroomInfo: () => {
+    return readJSON(showroomFile, null);
+  },
+
+  updateShowroomInfo: (data) => {
+    writeJSON(showroomFile, data);
+    return { changes: 1 };
   }
 };
