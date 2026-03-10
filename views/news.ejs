@@ -29,7 +29,27 @@
           <li><a href="/tra-gop" class="text-gray-700 hover:text-red-600 font-medium">Trả góp</a></li>
           <li><a href="/lien-he" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium">Liên hệ</a></li>
         </ul>
+        <button id="menuBtn" class="md:hidden text-gray-700 focus:outline-none" onclick="toggleMenu()" aria-label="Menu">
+          <svg id="menuIconOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg id="menuIconClose" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
       </nav>
+      <!-- Mobile Menu -->
+      <div id="mobileMenu" class="md:hidden hidden pb-4">
+        <ul class="flex flex-col space-y-1">
+          <li><a href="/" class="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium rounded-lg">Trang chủ</a></li>
+          <li><a href="/san-pham" class="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium rounded-lg">Sản phẩm</a></li>
+          <li><a href="/tin-tuc" class="block px-4 py-3 text-red-600 bg-red-50 font-medium rounded-lg border-l-4 border-red-600">Tin tức</a></li>
+          <li><a href="/khuyen-mai" class="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium rounded-lg">Khuyến mãi</a></li>
+          <li><a href="/dang-ky-lai-thu" class="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium rounded-lg">Đăng ký lái thử</a></li>
+          <li><a href="/tra-gop" class="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium rounded-lg">Trả góp</a></li>
+          <li><a href="/lien-he" class="block mx-4 mt-2 bg-red-600 text-white text-center px-6 py-3 rounded-lg hover:bg-red-700 font-medium">Liên hệ</a></li>
+        </ul>
+      </div>
     </div>
   </header>
 
@@ -71,5 +91,16 @@
       <p>&copy; 2024 Toyota. All rights reserved. | Hotline: 098 888 8888</p>
     </div>
   </footer>
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const iconOpen = document.getElementById('menuIconOpen');
+      const iconClose = document.getElementById('menuIconClose');
+      const isHidden = menu.classList.contains('hidden');
+      menu.classList.toggle('hidden', !isHidden);
+      iconOpen.classList.toggle('hidden', isHidden);
+      iconClose.classList.toggle('hidden', !isHidden);
+    }
+  </script>
 </body>
 </html>
